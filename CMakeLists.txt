@@ -12,12 +12,13 @@ set(INCLUDE_DIRS
 )
 
 set(SOURCES 
-
+    ${SRC}/chunk.c
+    ${SRC}/debug.c
 )
 
-# if ("${SOURCES}" NOT EQUAL "")
-#     add_library("${PROJECT_NAME}_SRC" SOURCES)
-# endif("${SOURCES}" NOT EQUAL "")
+add_library("${PROJECT_NAME}_SRC" ${SOURCES})
+target_include_directories("${PROJECT_NAME}_SRC" PUBLIC ${INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME} ${SRC}/main.c ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_SRC")
