@@ -4,16 +4,17 @@
 #include <oneFileSTD.h>
 #include <loxMemory.h>
 #include <value.h>
+#include <lineTracker.h>
 
 typedef enum {
     OP_CONSTANT,
     OP_RETURN
 } OpCode;
 
-typedef struct {
+typedef struct Chunk {
     size_t capacity, size;
     uint8_t *code;
-    int* lines;
+    LineTracker tracker;
     ValueArray constants;
 } Chunk;
 

@@ -1,24 +1,25 @@
 #include <debug.h>
 #include <chunk.h>
 #include <value.h>
+#include <lineTracker.h>
 
 int disassembleChunk(Chunk* chunk, const char* name) {
     printf("== %s ==\n", name);
     for (int i = 0; i < chunk->size;) {
-        i = disassembleInstruction(chunk, i);
+        i = disassembleInstruction(chunk, i, name);
     }
     return 0;
 }
 
-int disassembleInstruction(Chunk* chunk, size_t offset) {
-    printf("%04lu ", offset);
+int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
+    printf("%04lu at %s:%d ", offset, name, LineTracker_getLine(chunk, offset));
     if (
         offset > 0 &&
-        chunk->lines[offset] == chunk->lines[offset-1]
+        LineTracker_getLine(chunk, offset) == LineTracker_getLine(chunk, offset-1)
     ) {
         printf("    | ");
     } else {
-        printf("%4d ", chunk->lines[offset]);
+        printf("%4d ", LineTracker_getLine(chunk, offset));
     }
     uint8_t instruction = Chunk_data(chunk)[offset];
     switch (instruction) {

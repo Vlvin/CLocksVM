@@ -4,7 +4,7 @@
 #include <chunk.h>
 
 int disassembleChunk(Chunk* chunk, const char* name);
-int disassembleInstruction(Chunk* chunk, size_t offset);
+int disassembleInstruction(Chunk* chunk, size_t offset, const char* name);
 
 
 

@@ -14,6 +14,7 @@ set(INCLUDE_DIRS
 set(SOURCES 
     ${SRC}/chunk.c
     ${SRC}/loxMemory.c
+    ${SRC}/lineTracker.c
     ${SRC}/value.c
     ${SRC}/debug.c
 )

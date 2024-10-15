@@ -6,7 +6,7 @@ Chunk Chunk_init() {
         0, 
         0, 
         NULL,
-        NULL,
+        LineTracker_init(),
         ValueArray_init()
     };
     return ret;
@@ -15,22 +15,21 @@ Chunk Chunk_init() {
 int Chunk_add(Chunk* self, OpCode opcode, int line) {
     if (self->size == self->capacity) {
         GROW_ARRAY(uint8_t, self->code, self->capacity);
-        GROW_ARRAY(int, self->lines, self->capacity);
         self->capacity = GROW_CAPACITY(self->capacity);
         if (NULL == self->code)
             exit(1);
     }
     self->code[self->size] = opcode;
-    self->lines[self->size] = line;
+    LineTracker_write(&(self->tracker), line);
     self->size++;
     return 0;
 }
 
 int Chunk_free(Chunk* self) {
     FREE_ARRAY(uint8_t, self->code, self->capacity);
-    FREE_ARRAY(int, self->lines, self->capacity);
     (*self) = Chunk_init();
     ValueArray_free(&(self->constants));
+    LineTracker_free(&(self->tracker));
     return 0;
 }
 

@@ -9,24 +9,21 @@ ValueArray ValueArray_init() {
 }
 
 int ValueArray_free(ValueArray* self) {
-    self->data = reallocate(self->data, self->capacity, 0);
+    FREE_ARRAY(Value, self->data, self->capacity);
     (*self) = ValueArray_init();
     return 0;
 }
 
 size_t ValueArray_add(ValueArray* self, Value value) {
-    if (ValueArray_size(self) == ValueArray_capacity(self)) {
-        int newCapacity = ValueArray_capacity(self) * 2;
-        if (ValueArray_capacity(self) < 8) {
-            newCapacity = 8;
-        }
-        self->data = reallocate(self->data, self->capacity, newCapacity);
-        self->capacity = newCapacity;
-        if (NULL == ValueArray_data(self))
+
+    if (self->size == self->capacity) {
+        GROW_ARRAY(Value, self->data, self->capacity);
+        self->capacity = GROW_CAPACITY(self->capacity);
+        if (NULL == self->data)
             exit(1);
     }
-    ValueArray_data(self)[self->size] = value;
-    size_t valuePosition = ValueArray_size(self);
+    self->data[self->size] = value;
+    size_t valuePosition = self->size;
     self->size++;
     return valuePosition;
 }
