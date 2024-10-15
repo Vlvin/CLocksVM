@@ -5,12 +5,9 @@
 
 int main() {
     Chunk chunk = Chunk_init();
-    size_t constant = Chunk_addConstant(&chunk, 3.141596);
-    Chunk_add(&chunk, OP_CONSTANT, 3);
-    Chunk_add(&chunk, constant, 2);
-    Chunk_add(&chunk, OP_RETURN, 1);
+    size_t constant = Chunk_addConstant(&chunk, 3.141596, 1);
+    Chunk_add(&chunk, OP_RETURN, 2);
     disassembleChunk(&chunk, "main");
-    printf("%d\n", LineTracker_getLine(&chunk, 3));
     Chunk_free(&chunk);
     return 0;
 }

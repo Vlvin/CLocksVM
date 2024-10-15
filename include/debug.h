@@ -10,5 +10,6 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name);
 
 int simpleInstruction(const char* instruction, size_t offset);
 int constantInstruction(const char* instruction, Chunk* chunk, size_t offset);
+int constantLongInstruction(const char* instruction, Chunk* chunk, size_t offset);
 
 #endif

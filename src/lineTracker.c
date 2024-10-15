@@ -28,8 +28,8 @@ size_t LineTracker_write(LineTracker* self, int line) {
                 exit(1);
         }
         self->size++;
-        self->line[self->size-1] = line;
     }
+    self->line[self->size-1] = line;
     self->bytes_per_line[self->size-1]++;
     return 0;
 }

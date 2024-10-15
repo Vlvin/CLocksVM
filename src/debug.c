@@ -2,6 +2,7 @@
 #include <chunk.h>
 #include <value.h>
 #include <lineTracker.h>
+#include <bitsTricks.h>
 
 int disassembleChunk(Chunk* chunk, const char* name) {
     printf("== %s ==\n", name);
@@ -12,10 +13,10 @@ int disassembleChunk(Chunk* chunk, const char* name) {
 }
 
 int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
-    printf("%04lu at %s:%d ", offset, name, LineTracker_getLine(chunk, offset));
+    printf("%04lu at %s:%d ", offset, name, LineTracker_getLine(chunk, 1+offset));
     if (
         offset > 0 &&
-        LineTracker_getLine(chunk, offset) == LineTracker_getLine(chunk, offset-1)
+        LineTracker_getLine(chunk, 1+offset) == LineTracker_getLine(chunk, 1+offset-1)
     ) {
         printf("    | ");
     } else {
@@ -28,6 +29,9 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
             break;
         case OP_CONSTANT: 
             return constantInstruction("OP_CONSTANT", chunk, offset);
+            break;
+        case OP_CONSTANT_LONG: 
+            return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
             break;
     }
     printf("Unknown instruction at %4lu\n", offset);
@@ -48,4 +52,14 @@ int constantInstruction(const char* instruction, Chunk* chunk, size_t offset) {
     printf("'\n");
 
     return offset+2;
+}
+
+int constantLongInstruction(const char* instruction, Chunk* chunk, size_t offset) {
+    uint16_t index = forge_uint16((uint8_Pair){chunk->code[offset+1], chunk->code[offset+2]});
+    Value constant = ValueArray_data(&(chunk->constants))[index];
+    printf("%-16s %4d '", instruction, index);
+    printValue(constant);
+    printf("'\n");
+
+    return offset+3;
 }

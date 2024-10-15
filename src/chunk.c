@@ -1,5 +1,6 @@
 #include <chunk.h>
 #include <oneFileSTD.h>
+#include <bitsTricks.h>
 
 Chunk Chunk_init() {
     Chunk ret = {
@@ -33,8 +34,17 @@ int Chunk_free(Chunk* self) {
     return 0;
 }
 
-size_t Chunk_addConstant(Chunk* self, Value value) {
+size_t Chunk_addConstant(Chunk* self, Value value, int line) {
     size_t constLocation = ValueArray_add(&(self->constants), value);
+    if (constLocation > 255) {
+        Chunk_add(self, OP_CONSTANT_LONG, line);
+        uint8_Pair operands = split_uint16(constLocation);
+        Chunk_add(self, operands.first, line);
+        Chunk_add(self, operands.second, line);
+    } else {
+        Chunk_add(self, OP_CONSTANT, line);
+        Chunk_add(self, constLocation, line);
+    }
     return constLocation;
 }
 
