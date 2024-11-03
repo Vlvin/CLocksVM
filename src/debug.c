@@ -1,6 +1,6 @@
 #include <debug.h>
-#include <chunk.h>
-#include <value.h>
+#include <loxChunk.h>
+#include <loxValue.h>
 #include <lineTracker.h>
 #include <bitsTricks.h>
 
@@ -37,7 +37,6 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
     printf("Unknown instruction at %4lu\n", offset);
     return offset+1;
 }
-
 
 int simpleInstruction(const char* instruction, size_t offset) {
     printf("%s\n", instruction);

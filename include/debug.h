@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 #include <oneFileSTD.h>
-#include <chunk.h>
+#include <loxChunk.h>
 
 int disassembleChunk(Chunk* chunk, const char* name);
 int disassembleInstruction(Chunk* chunk, size_t offset, const char* name);

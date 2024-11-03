@@ -1,6 +1,6 @@
 #include <lineTracker.h>
 #include <loxMemory.h>
-#include <chunk.h>
+#include <loxChunk.h>
 
 LineTracker LineTracker_init() {
     LineTracker ret = {

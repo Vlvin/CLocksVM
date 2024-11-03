@@ -1,4 +1,4 @@
-#include <value.h>
+#include <loxValue.h>
 #include <loxMemory.h>
 
 ValueArray ValueArray_init() {

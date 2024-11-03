@@ -1,9 +1,9 @@
-#ifndef CHUNK_H
-#define CHUNK_H
+#ifndef LOX_CHUNK_H
+#define LOX_CHUNK_H
 
 #include <oneFileSTD.h>
 #include <loxMemory.h>
-#include <value.h>
+#include <loxValue.h>
 #include <lineTracker.h>
 
 typedef enum {

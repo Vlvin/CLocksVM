@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(CLocksCompiler)
 
-
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_compile_definitions(DEBUG_TRACE)
+endif("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 set(SRC ${PROJECT_SOURCE_DIR}/src)
 
@@ -12,11 +14,13 @@ set(INCLUDE_DIRS
 )
 
 set(SOURCES 
-    ${SRC}/chunk.c
+    ${SRC}/loxChunk.c
     ${SRC}/loxMemory.c
+    ${SRC}/loxVM.c
     ${SRC}/bitsTricks.c
+    ${SRC}/loxStack.c
     ${SRC}/lineTracker.c
-    ${SRC}/value.c
+    ${SRC}/loxValue.c
     ${SRC}/debug.c
 )
 

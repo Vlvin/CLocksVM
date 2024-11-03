@@ -9,7 +9,7 @@ void* reallocate(void* data, size_t oldSize, size_t newSize);
 #define FREE_ARRAY(type, array, oldSize) \
     array = reallocate(array, oldSize*sizeof(type), 0)
 
-#define GROW_ARRAY(type, array, oldSize); \
+#define GROW_ARRAY(type, array, oldSize) \
     array = reallocate(array, oldSize*sizeof(type), GROW_CAPACITY(oldSize)*sizeof(type))
 
 #define GROW_CAPACITY(oldSize) \
