@@ -23,9 +23,27 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
         printf("%4d ", LineTracker_getLine(chunk, offset));
     }
     uint8_t instruction = Chunk_data(chunk)[offset];
+    #define CASE_SIMPLE(INSTRUCTION) \
+        case INSTRUCTION: \
+            return simpleInstruction(#INSTRUCTION, offset);
     switch (instruction) {
-        case OP_RETURN:
-            return simpleInstruction("OP_RETURN", offset);
+        CASE_SIMPLE(OP_RETURN)
+            break;
+        CASE_SIMPLE(OP_NEGATE)
+            break;
+        CASE_SIMPLE(OP_ADD)
+            break;
+        CASE_SIMPLE(OP_SUBSTRACT)
+            break;
+        CASE_SIMPLE(OP_MULTIPLY)
+            break;
+        CASE_SIMPLE(OP_DIVIDE)
+            break;
+        CASE_SIMPLE(OP_NOT)
+            break;
+        CASE_SIMPLE(OP_AND)
+            break;
+        CASE_SIMPLE(OP_OR)
             break;
         case OP_CONSTANT: 
             return constantInstruction("OP_CONSTANT", chunk, offset);
@@ -34,6 +52,8 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
             return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
             break;
     }
+
+    #undef CASE_SIMPLE
     printf("Unknown instruction at %4lu\n", offset);
     return offset+1;
 }

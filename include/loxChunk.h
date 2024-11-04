@@ -7,8 +7,20 @@
 #include <lineTracker.h>
 
 typedef enum {
+    // STACK VARIABLES
     OP_CONSTANT_LONG,
     OP_CONSTANT,
+    // UNARY
+    OP_NEGATE,
+    OP_NOT,
+    // BINARY
+    OP_ADD,
+    OP_SUBSTRACT,
+    OP_DIVIDE,
+    OP_MULTIPLY,
+    OP_AND,
+    OP_OR,
+    // SIMPLE
     OP_RETURN
 } OpCode;
 
