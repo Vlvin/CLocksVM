@@ -1,7 +1,6 @@
 #include <debug.h>
 #include <loxChunk.h>
 #include <loxValue.h>
-#include <lineTracker.h>
 #include <bitsTricks.h>
 
 int disassembleChunk(Chunk* chunk, const char* name) {

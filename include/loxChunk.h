@@ -4,7 +4,7 @@
 #include <oneFileSTD.h>
 #include <loxMemory.h>
 #include <loxValue.h>
-#include <lineTracker.h>
+#include <loxLineTracker.h>
 
 typedef enum {
     // STACK VARIABLES
@@ -27,7 +27,7 @@ typedef enum {
 typedef struct Chunk {
     size_t capacity, size;
     uint8_t *code;
-    LineTracker tracker;
+    loxLineTracker tracker;
     ValueArray constants;
 } Chunk;
 

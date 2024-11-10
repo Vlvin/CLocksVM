@@ -10,7 +10,7 @@ typedef struct {
     LoxStack stack;
 } LoxVM;
 
-typedef enum {
+typedef enum LoxResult {
     LOX_INTERPRET_OK,
     LOX_INTERPRET_COMPILE_ERROR,
     LOX_INTERPRET_RUNTIME_ERROR,
@@ -21,8 +21,7 @@ void Lox_VM_printResult(LoxResult result);
 LoxVM LoxVM_init();
 void LoxVM_free(LoxVM* self);
 
-LoxResult LoxVM_interpret(LoxVM* self, Chunk* chunk);
-
+LoxResult LoxVM_interpret(LoxVM* self, const char* source);
 
 
 #endif

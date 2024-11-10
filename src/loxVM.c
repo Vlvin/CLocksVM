@@ -1,6 +1,6 @@
 #include <loxVM.h>
 #include <loxMemory.h>
-#include <loxMemory.h>
+#include <loxCompiler.h>
 #include <bitsTricks.h>
 #include <debug.h>
 
@@ -109,11 +109,13 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
 }
 
 
-LoxResult LoxVM_interpret(LoxVM* self, Chunk* chunk) {
-    self->chunk = chunk;
-    self->instruction = chunk->code;
-    return _LoxVM_run(self, chunk);
+
+LoxResult LoxVM_interpret(LoxVM* self, const char* source) {
+    loxCompiler_compile(source);
+    return LOX_INTERPRET_OK;
 }
+
+
 
 
 
