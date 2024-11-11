@@ -13,6 +13,7 @@ LoxResult lox_Repl() {
             break;
         }
         // execute
+        loxCompiler_compile(line);
         // loxInterpret
         // lox_runFile(buf);
     }
@@ -20,6 +21,8 @@ LoxResult lox_Repl() {
 
 LoxResult lox_runFile(const char* filename) {
     char* source = readFile(filename);
+    if (!source) 
+        return LOX_INTERPRET_COMPILE_ERROR;
     // execute
     loxCompiler_compile(source);
     // loxInterpret
@@ -41,6 +44,11 @@ char* readFile(const char* filename) {
     size_t size = ftell(file);
     rewind(file);
 
+    if (!size) {
+        fprintf(stderr, "File \"%s\" is empty\n", filename);
+        return NULL;
+    }
+
     char *buffer = (char*)malloc(size+1);
     if (!buffer) {
         fprintf(stderr, "Not enough memory to read \"%s\"\n", filename);
@@ -52,6 +60,7 @@ char* readFile(const char* filename) {
         fprintf(stderr, "Failed to read \"%s\"\n", filename);
         return NULL;
     }
+
     fclose(file);
 
     return buffer;

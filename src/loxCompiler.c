@@ -8,14 +8,19 @@ int loxCompiler_compile(const char* source) {
 
     while (true) {
         LoxToken token = LoxScanner_scanToken(&scanner);
+
+
         if (token.line != line) {
             printf("%4d ", token.line);
             line = token.line;
         } else {
-            printf("   | ");
+            printf("   | "); 
         }
 
-        printf("%2d %.*s", token.type, token.size, token.start);
+
+        (token.type == TOKEN_EOF) ?
+            printf("%2d \n", token.type) : // EOF is invisible for human eye
+            printf("%2d '%.*s'\n", token.type, token.size, token.start);
 
         if (token.type == TOKEN_EOF)
             break;

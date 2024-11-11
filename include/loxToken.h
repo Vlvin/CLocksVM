@@ -8,7 +8,7 @@ typedef struct LoxScanner LoxScanner;
 typedef enum {
   // Single-character tokens.
   TOKEN_LEFT_PAREN, TOKEN_RIGHT_PAREN, TOKEN_LEFT_BRACE, TOKEN_RIGHT_BRACE, // Single-character tokens.
-  TOKEN_COMMA, TOKEN_DOT, MINUS, TOKEN_PLUS, TOKEN_SEMICOLON, TOKEN_SLASH, TOKEN_STAR, // Single-character tokens.
+  TOKEN_COMMA, TOKEN_DOT, TOKEN_MINUS, TOKEN_PLUS, TOKEN_SEMICOLON, TOKEN_SLASH, TOKEN_STAR, // Single-character tokens.
   TOKEN_MOD, // Single-character tokens.
 
   // One or two character tokens.
@@ -45,14 +45,5 @@ LoxToken LoxToken_init(
     size_t size
 );
 
-LoxToken LoxToken_make(
-    LoxScanner *scanner,
-    TokenType type
-);
-
-LoxToken LoxToken_errorToken(
-    LoxScanner* scanner,
-    const char* message
-);
 
 #endif
