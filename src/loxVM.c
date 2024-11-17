@@ -22,6 +22,7 @@ void LoxVM_free(LoxVM* self) {
 
 
 LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
+    // LoxStack* stack = &self->stack;
     #define READ_BYTE(vm) (*vm->instruction++)
     #define READ_CONST(vm) Chunk_getConstant(vm->chunk, READ_BYTE(vm))
     #define READ_CONST_LONG(vm) Chunk_getConstant(vm->chunk, forge_uint16((uint8_Pair){READ_BYTE(vm), READ_BYTE(vm)}))
@@ -32,16 +33,21 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
         LoxStack_push(&self->stack, result); \
         printValue(LoxStack_top(&self->stack)); \
     }
-    #define UNARY_OP(op) { \
-        Value result = op LoxStack_pop(&self->stack); \
-        LoxStack_push(&self->stack, result); \
-        printValue(LoxStack_top(&self->stack)); \
-    }
+    #define UNARY_OP(op) do { \
+            Value* value = LoxStack_rtop(&self->stack); \
+            if (value == NULL) \
+                break; \
+            *value = op LoxStack_top(&self->stack); \
+            printValue(LoxStack_top(&self->stack)); \
+        } while(false);
+
+    self->chunk = chunk;
+    self->instruction = chunk->code;
 
     while (self->instruction < &chunk->code[chunk->size]) {
         uint8_t instruction;
         #ifdef DEBUG_TRACE
-        printf("stack L-R   ");
+        printf("&self->stack L-R   ");
         for (Value* slot = self->stack.data; slot < self->stack.topElement; slot++) {
             printf("[ ");
             printValue(*slot);

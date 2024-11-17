@@ -22,6 +22,7 @@ LoxVM LoxVM_init();
 void LoxVM_free(LoxVM* self);
 
 LoxResult LoxVM_interpret(LoxVM* self, const char* source);
+LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk);
 
 
 #endif

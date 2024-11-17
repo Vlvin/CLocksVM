@@ -39,6 +39,14 @@ Value LoxStack_top(LoxStack* self) {
     return self->topElement[-1];
 }
 
+
+Value *LoxStack_rtop(LoxStack* self) {
+    if (self->topElement == NULL) {
+        return NULL;
+    }
+    return self->topElement-1; // pointer arithmetics
+}
+
 Value LoxStack_pop(LoxStack* self) {
     Value top = LoxStack_top(self);
     if (self->topElement != &self->data[0])
