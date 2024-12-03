@@ -12,7 +12,7 @@ typedef struct LoxStack {
 
 
 
-LoxStack LoxStack_init();
+void LoxStack_init(LoxStack *self);
 void LoxStack_reset(LoxStack* self);
 void LoxStack_free(LoxStack* self);
 int LoxStack_push(LoxStack* self, Value value);

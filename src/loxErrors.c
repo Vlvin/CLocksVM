@@ -2,12 +2,12 @@
 #include <loxParser.h>
 #include <loxToken.h>
 
-inline static void errorAtCurrent(LoxParser* parser, const char *message) {
+void errorAtCurrent(LoxParser* parser, const char *message) {
   return errorAt(parser, &parser->previous, message);
 }
 
 
-inline static void errorAt(LoxParser* parser, LoxToken* token, const char *message) {
+void errorAt(LoxParser* parser, LoxToken* token, const char *message) {
   fprintf(stderr, "Error in %s at line %d", "module", token->line);
 
   if (token->type == TOKEN_EOF) {

@@ -2,7 +2,7 @@
 #include <loxScanner.h>
 #include <loxMemory.h>
 
-LoxToken LoxToken_init(
+LoxToken LoxToken_create(
     TokenType type, 
     size_t line, 
     const char* start,

@@ -2,21 +2,21 @@
 #define LOX_LINE_TRACKER_H
 #include <oneFileSTD.h>
 
-typedef struct loxLineTracker {
+typedef struct LoxLineTracker {
     size_t size, capacity;
     int* line;
     int* bytes_per_line;
-} loxLineTracker;
+} LoxLineTracker;
 
 typedef struct Chunk Chunk;
 
 
-loxLineTracker LineTracker_init();
-int LineTracker_free(loxLineTracker* self);
-size_t LineTracker_write(loxLineTracker* self, int line);
+void LineTracker_init(LoxLineTracker* self);
+int LineTracker_free(LoxLineTracker* self);
+size_t LineTracker_write(LoxLineTracker* self, int line);
 
 /// @brief fun to get line of instruction in chunk at index
-/// @param chunk parent of loxLineTracker
+/// @param chunk parent of LoxLineTracker
 /// @param index instruction position
 /// @return line where instruction came from
 int LineTracker_getLine(Chunk* chunk, size_t index);

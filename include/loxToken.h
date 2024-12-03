@@ -5,7 +5,7 @@
 
 typedef struct LoxScanner LoxScanner;
 
-typedef enum {
+typedef enum TokenType {
   // Single-character tokens.
   TOKEN_LEFT_PAREN, TOKEN_RIGHT_PAREN, TOKEN_LEFT_BRACE, TOKEN_RIGHT_BRACE, // Single-character tokens.
   TOKEN_COMMA, TOKEN_DOT, TOKEN_MINUS, TOKEN_PLUS, TOKEN_SEMICOLON, TOKEN_SLASH, TOKEN_STAR, // Single-character tokens.
@@ -31,7 +31,7 @@ typedef enum {
   TOKEN_ERROR, TOKEN_EOF
 } TokenType;
 
-typedef struct {
+typedef struct LoxToken {
     TokenType type;
     size_t line;
     const char* start;
@@ -39,26 +39,12 @@ typedef struct {
 } LoxToken;
 
 
-LoxToken LoxToken_init(
+LoxToken LoxToken_create(
     TokenType type, 
     size_t line, 
     const char* start,
     size_t size
 );
-
-/// @brief used to efficiently store bunch of tokens
-typedef struct {
-  long long size, capacity;
-  LoxToken* tokens;
-  LoxToken token;
-} LoxTokenList;
-
-
-
-LoxTokenList LoxTokenList_init();
-void LoxTokenList_push(LoxTokenList* self, LoxToken token);
-void LoxTokenList_pop(LoxTokenList* self);
-void LoxTokenList_free(LoxTokenList* self);
 
 
 

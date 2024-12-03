@@ -1,16 +1,15 @@
 #include <loxValue.h>
 #include <loxMemory.h>
 
-ValueArray ValueArray_init() {
-    ValueArray ret = {
+void ValueArray_init(ValueArray* self) {
+    (*self) = (ValueArray){
         0, 0, NULL
     };
-    return ret;
 }
 
 int ValueArray_free(ValueArray* self) {
     FREE_ARRAY(Value, self->data, self->capacity);
-    (*self) = ValueArray_init();
+    ValueArray_init(self);
     return 0;
 }
 

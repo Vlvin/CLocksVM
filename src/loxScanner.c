@@ -1,10 +1,9 @@
-#include <loxScanner.h>
 #include <oneFileSTD.h>
+#include <loxScanner.h>
 #include <loxToken.h>
 
-
 // helpers
-static inline bool isAlpha(const char ch) {
+bool isAlpha(const char ch) {
     return (
         (
             'a' <= ch &&
@@ -17,18 +16,18 @@ static inline bool isAlpha(const char ch) {
         )
     );
 }
-static inline bool isDigit(const char ch) {
+bool isDigit(const char ch) {
     return (
         '0' <= ch &&
         '9' >= ch
     );
 }
-static inline bool isAlphaNumeric(const char ch) {
+bool isAlphaNumeric(const char ch) {
     return ( isAlpha(ch) || isDigit(ch) );
 }
 
-LoxScanner LoxScanner_init(const char* source) {
-    return (LoxScanner){
+void LoxScanner_init(LoxScanner* self, const char* source) {
+    (*self) = (LoxScanner){
         source,
         source,
         1
@@ -194,7 +193,7 @@ LoxToken LoxScanner_identifier(LoxScanner* self) {
 }
 
 LoxToken LoxScanner_makeToken(LoxScanner *self, TokenType type) {
-    return LoxToken_init(
+    return LoxToken_create(
         type,
         self->line,
         self->start,
@@ -203,7 +202,7 @@ LoxToken LoxScanner_makeToken(LoxScanner *self, TokenType type) {
 }
 
 LoxToken LoxScanner_errorToken(LoxScanner *self, const char* message) {
-    return LoxToken_init(
+    return LoxToken_create(
         TOKEN_ERROR,
         self->line,
         message,

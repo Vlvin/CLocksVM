@@ -1,9 +1,14 @@
 #include <loxVM.h>
 #include <loxCLI.h>
+#include <loxScanner.h>
 #include <loxCompiler.h>
 #include <oneFileSTD.h>
 
 LoxResult lox_Repl() {
+    LoxCompiler compiler;
+    LoxCompiler_init(&compiler);
+    LoxVM vm;
+    LoxVM_init(&vm);
     while (true) {
         // readline
         printf("%s", "clox >> ");
@@ -13,10 +18,12 @@ LoxResult lox_Repl() {
             break;
         }
         // execute
-        loxCompiler_compile(line);
+        LoxCompiler_compile(&compiler, line, NULL);
         // loxInterpret
         // lox_runFile(buf);
     }
+    LoxCompiler_free(&compiler);
+    LoxVM_free(&vm);
 }
 
 LoxResult lox_runFile(const char* filename) {
@@ -24,8 +31,14 @@ LoxResult lox_runFile(const char* filename) {
     if (!source) 
         return LOX_INTERPRET_COMPILE_ERROR;
     // execute
-    loxCompiler_compile(source);
+    LoxCompiler compiler;
+    LoxCompiler_init(&compiler);
+    LoxCompiler_compile(&compiler, source, NULL);
+    LoxVM vm;
+    LoxVM_init(&vm);
     // loxInterpret
+    LoxCompiler_free(&compiler);
+    LoxVM_free(&vm);
     free(source);
 }
 

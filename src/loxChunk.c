@@ -2,15 +2,9 @@
 #include <oneFileSTD.h>
 #include <bitsTricks.h>
 
-Chunk Chunk_init() {
-    Chunk ret = {
-        0, 
-        0, 
-        NULL,
-        LineTracker_init(),
-        ValueArray_init()
-    };
-    return ret;
+void Chunk_init(Chunk* self) {
+    *self = (Chunk){0};
+
 }
 
 int Chunk_add(Chunk* self, OpCode opcode, int line) {
@@ -28,7 +22,7 @@ int Chunk_add(Chunk* self, OpCode opcode, int line) {
 
 int Chunk_free(Chunk* self) {
     FREE_ARRAY(uint8_t, self->code, self->capacity);
-    (*self) = Chunk_init();
+    Chunk_init(self);
     ValueArray_free(&(self->constants));
     LineTracker_free(&(self->tracker));
     return 0;

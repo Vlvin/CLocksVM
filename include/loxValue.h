@@ -11,7 +11,7 @@ typedef struct ValueArray {
 } ValueArray;
 
 
-ValueArray ValueArray_init();
+void ValueArray_init(ValueArray* self);
 int ValueArray_free(ValueArray* self);
 size_t ValueArray_add(ValueArray* self, Value value);
 

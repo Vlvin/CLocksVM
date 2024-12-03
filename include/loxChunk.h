@@ -27,11 +27,11 @@ typedef enum {
 typedef struct Chunk {
     size_t capacity, size;
     uint8_t *code;
-    loxLineTracker tracker;
+    LoxLineTracker tracker;
     ValueArray constants;
 } Chunk;
 
-Chunk Chunk_init();
+void Chunk_init(Chunk *self);
 
 /// @brief 
 /// @param self allocated chunk

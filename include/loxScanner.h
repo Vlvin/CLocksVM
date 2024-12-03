@@ -2,8 +2,11 @@
 #define LOX_SCANNER_H
 
 #include <oneFileSTD.h>
-#include <loxToken.h>
 
+
+
+typedef enum TokenType TokenType;
+typedef struct LoxToken LoxToken;
 
 typedef struct LoxScanner {
     const char* start, *current;
@@ -14,7 +17,7 @@ typedef struct LoxScanner {
 /// @brief LoxScanner constructor
 /// @param source lox source code 
 /// @return Self@LoxScanner
-LoxScanner LoxScanner_init(const char* source);
+void LoxScanner_init(LoxScanner* self, const char* source);
 /// @brief scans next token of lox source
 /// @return scanned token
 LoxToken LoxScanner_scanToken(LoxScanner* self);

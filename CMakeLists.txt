@@ -19,17 +19,19 @@ set(INCLUDE_DIRS
 
 set(SOURCES 
     ${SRC}/bitsTricks.c
-    ${SRC}/loxCompiler.c
-    ${SRC}/loxScanner.c
-    ${SRC}/loxToken.c
-    ${SRC}/loxChunk.c
-    ${SRC}/loxMemory.c
-    ${SRC}/loxVM.c
-    ${SRC}/loxStack.c
-    ${SRC}/loxLineTracker.c
-    ${SRC}/loxValue.c
-    ${SRC}/loxCLI.c
     ${SRC}/debug.c
+    ${SRC}/loxChunk.c
+    ${SRC}/loxCLI.c
+    ${SRC}/loxCompiler.c
+    ${SRC}/loxErrors.c
+    ${SRC}/loxLineTracker.c
+    ${SRC}/loxMemory.c
+    ${SRC}/loxParser.c
+    ${SRC}/loxScanner.c
+    ${SRC}/loxStack.c
+    ${SRC}/loxToken.c
+    ${SRC}/loxValue.c
+    ${SRC}/loxVM.c
 )
 
 add_library("${PROJECT_NAME}_SRC" ${SOURCES})

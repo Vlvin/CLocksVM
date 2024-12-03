@@ -4,10 +4,8 @@
 #include <oneFileSTD.h>
 
 
-LoxStack LoxStack_init() {
-    LoxStack self;
-    LoxStack_reset(&self);
-    return self;
+void LoxStack_init(LoxStack *self) {
+    LoxStack_reset(self);
 }
 
 

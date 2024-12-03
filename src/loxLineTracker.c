@@ -1,23 +1,20 @@
 #include <loxMemory.h>
 #include <loxChunk.h>
 
-loxLineTracker LineTracker_init() {
-    loxLineTracker ret = {
-        0, 0, NULL, NULL
-    };
-    return ret;
+void LineTracker_init(LoxLineTracker* self) {
+    (*self) = (LoxLineTracker){0};
 }
 
-int LineTracker_free(loxLineTracker* self) {
+int LineTracker_free(LoxLineTracker* self) {
     FREE_ARRAY(int, self->line, self->capacity);
     FREE_ARRAY(int, self->bytes_per_line, self->capacity);
-    (*self) = LineTracker_init();
+    LineTracker_init(self);
     return 0;
 }
 
 
 
-size_t LineTracker_write(loxLineTracker* self, int line) {
+size_t LineTracker_write(LoxLineTracker* self, int line) {
     if (self->size == 0 || self->line[self->size-1] != line) {
         if (self->size == self->capacity) {
             GROW_ARRAY(int, self->line, self->capacity);

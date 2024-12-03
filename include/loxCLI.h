@@ -1,5 +1,5 @@
-#ifndef LOX_SCANNER_H
-#define LOX_SCANNER_H
+#ifndef LOX_CLI_H
+#define LOX_CLI_H
 
 typedef enum LoxResult LoxResult;
 

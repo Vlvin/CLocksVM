@@ -18,7 +18,7 @@ typedef enum LoxResult {
 
 void Lox_VM_printResult(LoxResult result);
 
-LoxVM LoxVM_init();
+void LoxVM_init(LoxVM* self);
 void LoxVM_free(LoxVM* self);
 
 LoxResult LoxVM_interpret(LoxVM* self, const char* source);

@@ -7,13 +7,12 @@
 /**
  * @note
  * Please change api to 
- * LoxVM_init(LoxVM*)
+ * LoxVM_init(LoxVM* self)
  * so we'll have no need to copy data all the time
  */
-LoxVM LoxVM_init() {
-    LoxVM self = {0};
-    self.stack = LoxStack_init();
-    return self;
+void LoxVM_init(LoxVM* self) {
+    (*self) = (LoxVM){0};
+    LoxStack_init(&self->stack);
 }
 
 void LoxVM_free(LoxVM* self) {
@@ -117,9 +116,11 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
 
 
 LoxResult LoxVM_interpret(LoxVM* self, const char* source) {
-    Chunk chunk = Chunk_init();
+    Chunk chunk;
+    Chunk_init(&chunk);
 
-    LoxCompiler compiler = LoxCompiler_init();
+    LoxCompiler compiler;
+    LoxCompiler_init(&compiler);
 
     if (!LoxCompiler_compile(&compiler, source, &chunk)) {
         Chunk_free(&chunk);
@@ -128,7 +129,7 @@ LoxResult LoxVM_interpret(LoxVM* self, const char* source) {
     }
 
     self->chunk = &chunk;
-    self->instruction = chunk.code[0];
+    self->instruction = &chunk.code[0];
 
     LoxResult result = _LoxVM_run(self, &chunk);
     return result;
