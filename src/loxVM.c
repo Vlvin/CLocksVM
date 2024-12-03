@@ -30,12 +30,10 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
             Value a = LoxStack_pop(stack); \
             Value result = (a op b); \
             LoxStack_push(stack, result); \
-            printValue(LoxStack_top(stack)); \
         } while(false);
     #define UNARY_OP(op) do { \
             Value* value = LoxStack_rtop(stack); \
             *value = op LoxStack_top(stack); \
-            printValue(LoxStack_top(stack)); \
         } while(false);
 
     self->chunk = chunk;
@@ -44,7 +42,7 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
     while (self->instruction < &chunk->code[chunk->size]) {
         uint8_t instruction;
         #ifdef DEBUG_TRACE
-        printf("stack L-R   ");
+        printf("    ");
         for (Value* slot = self->stack.data; slot < self->stack.topElement; slot++) {
             printf("[ ");
             printValue(*slot);
@@ -57,19 +55,15 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
             "LoxRun"
         );
         #endif
-
-        printf("Expression result ");
         switch (instruction = READ_BYTE(self)) {
             case OP_CONSTANT: {
                 Value constant = READ_CONST(self);
                 LoxStack_push(stack, constant);
-                printValue(LoxStack_top(stack));
                 break;
             }
             case OP_CONSTANT_LONG: {
                 Value constant = READ_CONST_LONG(self);
                 LoxStack_push(stack, constant);
-                printValue(LoxStack_top(stack));
                 break;
             }
             case OP_NEGATE:
@@ -102,8 +96,9 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
                 printf("\n\n");
                 return LOX_INTERPRET_OK;
         }
-        printf("\n\n");
+        printf("\n");
     }
+    printf("\n\n");
     return LOX_INTERPRET_RUNTIME_ERROR;
 
     #undef READ_BYTE

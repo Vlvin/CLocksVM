@@ -4,7 +4,8 @@
 
 void Chunk_init(Chunk* self) {
     *self = (Chunk){0};
-
+    ValueArray_init(&self->constants);
+    LineTracker_init(&self->tracker);
 }
 
 int Chunk_add(Chunk* self, OpCode opcode, int line) {

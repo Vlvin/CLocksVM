@@ -20,8 +20,9 @@ size_t LineTracker_write(LoxLineTracker* self, int line) {
             GROW_ARRAY(int, self->line, self->capacity);
             GROW_ARRAY(int, self->bytes_per_line, self->capacity);
             self->capacity = GROW_CAPACITY(self->capacity);
-            if (NULL == self->line || NULL == self->bytes_per_line)
+            if (NULL == self->line || NULL == self->bytes_per_line) {
                 exit(1);
+            }
         }
         self->size++;
     }

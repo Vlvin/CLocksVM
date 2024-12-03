@@ -3,6 +3,10 @@
 #include <bitsTricks.h>
 #include <stdarg.h>
 
+#ifdef DEBUG_PRINT_CODE
+#include <debug.h>
+#endif
+
 void LoxCompiler_init(LoxCompiler* self) {
     LoxParser_init(&self->parser, self);
 }
@@ -28,6 +32,10 @@ Chunk* LoxCompiler_currentChunk(LoxCompiler* self) {
 
 void LoxCompiler_end(LoxCompiler* self) {
     _LoxCompiler_emitReturn(self);
+    #ifdef DEBUG_PRINT_CODE
+    if (!self->parser.hadError)
+        disassembleChunk(self->compilingChunk, "code");
+    #endif
 }
 
 

@@ -5,8 +5,6 @@
 #include <oneFileSTD.h>
 
 LoxResult lox_Repl() {
-    LoxCompiler compiler;
-    LoxCompiler_init(&compiler);
     LoxVM vm;
     LoxVM_init(&vm);
     while (true) {
@@ -18,11 +16,13 @@ LoxResult lox_Repl() {
             break;
         }
         // execute
-        LoxCompiler_compile(&compiler, line, NULL);
+        LoxResult result = LoxVM_interpret(&vm, line);
+        if (result != LOX_INTERPRET_OK) {
+            Lox_VM_printResult(result);
+        }
         // loxInterpret
         // lox_runFile(buf);
     }
-    LoxCompiler_free(&compiler);
     LoxVM_free(&vm);
 }
 
@@ -31,15 +31,15 @@ LoxResult lox_runFile(const char* filename) {
     if (!source) 
         return LOX_INTERPRET_COMPILE_ERROR;
     // execute
-    LoxCompiler compiler;
-    LoxCompiler_init(&compiler);
-    LoxCompiler_compile(&compiler, source, NULL);
     LoxVM vm;
     LoxVM_init(&vm);
+
+    LoxResult result = LoxVM_interpret(&vm, source);
+
     // loxInterpret
-    LoxCompiler_free(&compiler);
     LoxVM_free(&vm);
     free(source);
+    return result;
 }
 
 

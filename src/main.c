@@ -10,10 +10,10 @@
 int main(int argc, const char** argv) {
     switch (argc) {
         case 1:
-            lox_Repl();
+            Lox_VM_printResult(lox_Repl());
             break;
         case 2:
-            lox_runFile(argv[1]);
+            Lox_VM_printResult(lox_runFile(argv[1]));
             break;
         default:
             fprintf(stderr, "Usage: %s [path]\n", argv[0]);

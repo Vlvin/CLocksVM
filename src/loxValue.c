@@ -18,8 +18,8 @@ size_t ValueArray_add(ValueArray* self, Value value) {
     if (self->size == self->capacity) {
         GROW_ARRAY(Value, self->data, self->capacity);
         self->capacity = GROW_CAPACITY(self->capacity);
-        if (NULL == self->data)
-            exit(1);
+        if (NULL == (self->data)){
+            exit(1);}
     }
     self->data[self->size] = value;
     size_t valuePosition = self->size;
