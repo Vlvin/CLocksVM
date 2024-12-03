@@ -17,7 +17,7 @@ bool LoxCompiler_compile(LoxCompiler *self, const char* source, Chunk *chunk) {
 
     LoxParser_advance(&self->parser, &self->scanner);
     LoxParser_expression(&self->parser);
-    LoxParser_consume(&self->parser, &self->scanner, TOKEN_EOF, "Expect end of expression");
+    LoxParser_consume(&self->parser, &self->scanner, TOKEN_SEMICOLON, "Expect end of expression");
 
 
     LoxScanner_free(&self->scanner);

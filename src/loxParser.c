@@ -75,12 +75,16 @@ void LoxParser_advance(LoxParser* self, LoxScanner *scanner) {
     errorAtCurrent(self, "Expected expression");
   }
 }
+
+
 void LoxParser_consume(LoxParser* self, LoxScanner *scanner, TokenType type, const char* error_message) {
-
+  printf("%d : %d  :: %d\n", self->previous.type, self->current.type, type);
+  if (self->current.type != type) {
+    self->hadError = true;
+    errorAtCurrent(self, error_message);
+  }
+  LoxParser_advance(self, scanner);
 }
-
-
-
 
 
 void LoxParser_expression(LoxParser* self) {

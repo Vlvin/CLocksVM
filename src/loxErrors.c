@@ -11,13 +11,13 @@ void errorAt(LoxParser* parser, LoxToken* token, const char *message) {
   fprintf(stderr, "Error in %s at line %d", "module", token->line);
 
   if (token->type == TOKEN_EOF) {
-    fprintf(stderr, "at end\n");
+    fprintf(stderr, " at end");
   } else if (token->type == TOKEN_ERROR) {
     // do nothing
   } else {
-    fprintf(stderr, "at '%.*s'\n", token->size, token->start);
+    fprintf(stderr, " at '%.*s'", token->size, token->start);
   }
 
-  fprintf(stderr, ": %s\n", message);
+  fprintf(stderr, " : %s\n", message);
   parser->hadError = true;
 }
