@@ -31,6 +31,8 @@ char LoxScanner_peek(LoxScanner* self);
 char LoxScanner_peekNext(LoxScanner* self);
 void LoxScanner_skipWhiteSpaces(LoxScanner* self);
 
+
+// LoxToken LoxScanner_stringInterpolation(LoxScanner* self);
 LoxToken LoxScanner_string(LoxScanner* self);
 LoxToken LoxScanner_number(LoxScanner* self);
 LoxToken LoxScanner_identifier(LoxScanner* self);

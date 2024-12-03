@@ -154,6 +154,14 @@ void LoxScanner_skipWhiteSpaces(LoxScanner* self) {
 }
 
 
+LoxToken LoxScanner_stringInterpolation(LoxScanner* self) {
+    while (LoxScanner_peek(self) != '}' && !LoxScanner_isAtEnd(self)) {
+        if (LoxScanner_peek(self) == '\n') 
+            self->line++;
+        LoxScanner_advance(self);
+    }
+}
+
 LoxToken LoxScanner_string(LoxScanner* self) {
     while (LoxScanner_peek(self) != '"' && !LoxScanner_isAtEnd(self)) {
         if (LoxScanner_peek(self) == '\n') 

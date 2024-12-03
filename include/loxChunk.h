@@ -46,7 +46,7 @@ int Chunk_add(Chunk* self, OpCode code, int line);
 /// @param self allocated chunk
 /// @param value constant to add to chunk pool
 /// @return index of new constant
-size_t Chunk_addConstant(Chunk* self, Value value, int line);
+size_t Chunk_addConstant(Chunk* self, Value value);
 Value Chunk_getConstant(Chunk* self, size_t index);
 
 const size_t Chunk_size(Chunk* self);

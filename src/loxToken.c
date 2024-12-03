@@ -1,5 +1,6 @@
 #include <loxToken.h>
 #include <loxScanner.h>
+#include <loxMemory.h>
 
 LoxToken LoxToken_init(
     TokenType type, 

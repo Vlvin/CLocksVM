@@ -38,12 +38,28 @@ typedef struct {
     size_t size;
 } LoxToken;
 
+
 LoxToken LoxToken_init(
     TokenType type, 
     size_t line, 
     const char* start,
     size_t size
 );
+
+/// @brief used to efficiently store bunch of tokens
+typedef struct {
+  long long size, capacity;
+  LoxToken* tokens;
+  LoxToken token;
+} LoxTokenList;
+
+
+
+LoxTokenList LoxTokenList_init();
+void LoxTokenList_push(LoxTokenList* self, LoxToken token);
+void LoxTokenList_pop(LoxTokenList* self);
+void LoxTokenList_free(LoxTokenList* self);
+
 
 
 #endif

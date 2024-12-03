@@ -13,7 +13,6 @@ LoxStack LoxStack_init() {
 
 void LoxStack_reset(LoxStack* self) {
     *self = (LoxStack){0};
-    self->topElement = NULL;
 }
 
 void LoxStack_free(LoxStack* self) {
