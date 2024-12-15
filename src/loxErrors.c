@@ -1,20 +1,42 @@
 #include <loxErrors.h>
 #include <loxParser.h>
 #include <loxToken.h>
+#include <loxVM.h>
+#include <oneFileSTD.h>
 
-void errorAtCurrent(LoxParser* parser, const char *message) {
+void runtimeError(LoxVM *vm, const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  fprintf(stderr, format, args);
+  va_end(args);
+  fputc('\n', stderr);
+
+  size_t instruction = vm->instruction - vm->chunk->code - 1;
+  int line = LineTracker_getLine(vm->chunk, instruction);
+  fprintf(stderr, "in %s at line %d\n", "module", line);
+  LoxStack_reset(&vm->stack);
+}
+
+void errorAtCurrent(LoxParser *parser, const char *message)
+{
   return errorAt(parser, &parser->previous, message);
 }
 
+void errorAt(LoxParser *parser, LoxToken *token, const char *message)
+{
+  fprintf(stderr, "Error \nin %s at line %d", "module", token->line);
 
-void errorAt(LoxParser* parser, LoxToken* token, const char *message) {
-  fprintf(stderr, "Error in %s at line %d", "module", token->line);
-
-  if (token->type == TOKEN_EOF) {
+  if (token->type == TOKEN_EOF)
+  {
     fprintf(stderr, " at end");
-  } else if (token->type == TOKEN_ERROR) {
+  }
+  else if (token->type == TOKEN_ERROR)
+  {
     // do nothing
-  } else {
+  }
+  else
+  {
     fprintf(stderr, " at '%.*s'", token->size, token->start);
   }
 

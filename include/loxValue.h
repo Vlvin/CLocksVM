@@ -3,23 +3,35 @@
 
 #include <oneFileSTD.h>
 
-typedef double Value;
+typedef enum {
+  LOX_BOOL,
+  LOX_NUMBER,
+  // LOX_STRING,
+  LOX_NIL
+} loxValueType;
 
-typedef struct ValueArray {
-    size_t capacity, size;
-    Value* data;
-} ValueArray;
+typedef struct {
+  loxValueType type;
+  union {
+    // char * string;
+    bool boolean;
+    double number;
+  } as;
+} LoxValue;
 
+#define LOX_BOOL_VAL(value) (LoxValue){LOX_BOOL, {.boolean = value}}
+#define LOX_NUMBER_VAL(value) (LoxValue){LOX_NUMBER, {.number = value}}
+#define LOX_NIL_VAL (LoxValue){LOX_NIL, {.number = 0}}
 
-void ValueArray_init(ValueArray* self);
-int ValueArray_free(ValueArray* self);
-size_t ValueArray_add(ValueArray* self, Value value);
+// checks
+#define IS_SAME_TYPE(value, loxtype) ((value).type == loxtype)
 
+#define IS_LOX_BOOL(value) IS_SAME_TYPE(value, LOX_BOOL)
+#define IS_LOX_NUMBER(value) IS_SAME_TYPE(value, LOX_NUMBER)
+#define IS_LOX_NIL(value) IS_SAME_TYPE(value, LOX_NIL)
 
-void printValue(Value value);
+#define AS_LOX_BOOL(value) ((value).as.boolean)
+#define AS_LOX_NUMBER(value) ((value).as.number)
 
-const size_t ValueArray_size(ValueArray* self);
-const size_t ValueArray_capacity(ValueArray* self);
-Value * const ValueArray_data(ValueArray* self);
 
 #endif

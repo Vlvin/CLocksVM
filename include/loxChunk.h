@@ -3,7 +3,7 @@
 
 #include <oneFileSTD.h>
 #include <loxMemory.h>
-#include <loxValue.h>
+#include <loxValueArray.h>
 #include <loxLineTracker.h>
 
 typedef enum {
@@ -46,8 +46,8 @@ int Chunk_add(Chunk* self, OpCode code, int line);
 /// @param self allocated chunk
 /// @param value constant to add to chunk pool
 /// @return index of new constant
-size_t Chunk_addConstant(Chunk* self, Value value);
-Value Chunk_getConstant(Chunk* self, size_t index);
+size_t Chunk_addConstant(Chunk* self, LoxValue value);
+LoxValue Chunk_getConstant(Chunk* self, size_t index);
 
 const size_t Chunk_size(Chunk* self);
 const size_t Chunk_capacity(Chunk* self);

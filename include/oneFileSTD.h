@@ -8,5 +8,6 @@
 #include <malloc.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #endif

@@ -29,12 +29,12 @@ int Chunk_free(Chunk* self) {
     return 0;
 }
 
-size_t Chunk_addConstant(Chunk* self, Value value) {
+size_t Chunk_addConstant(Chunk* self, LoxValue value) {
     size_t constLocation = ValueArray_add(&(self->constants), value);
     return constLocation;
 }
 
-Value Chunk_getConstant(Chunk* self, size_t index) {
+LoxValue Chunk_getConstant(Chunk* self, size_t index) {
     return ValueArray_data(&(self->constants))[index];
 }
 

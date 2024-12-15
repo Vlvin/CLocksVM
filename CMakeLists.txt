@@ -32,6 +32,7 @@ set(SOURCES
     ${SRC}/loxStack.c
     ${SRC}/loxToken.c
     ${SRC}/loxValue.c
+    ${SRC}/loxValueArray.c
     ${SRC}/loxVM.c
 )
 

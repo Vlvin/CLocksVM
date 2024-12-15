@@ -3,6 +3,8 @@
 #include <loxCompiler.h>
 #include <bitsTricks.h>
 #include <debug.h>
+#include <loxValue.h>
+#include <loxErrors.h>
 
 /**
  * @note
@@ -25,16 +27,27 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
     #define READ_BYTE(vm) (*vm->instruction++)
     #define READ_CONST(vm) Chunk_getConstant(vm->chunk, READ_BYTE(vm))
     #define READ_CONST_LONG(vm) Chunk_getConstant(vm->chunk, forge_uint16((uint8_Pair){READ_BYTE(vm), READ_BYTE(vm)}))
-    #define BINARY_OP(op) do { \
-            Value b = LoxStack_pop(stack); \
-            Value a = LoxStack_pop(stack); \
-            Value result = (a op b); \
-            LoxStack_push(stack, result); \
+    #define BINARY_OP(op, left_lox_type) do { \
+            if (!(IS_##left_lox_type(LoxStack_peek(stack, 0)) && IS_##left_lox_type(LoxStack_peek(stack, 1)))) { \
+              runtimeError(self, "Runtime error %s %s", "Expected Type", # left_lox_type); \
+              return LOX_INTERPRET_RUNTIME_ERROR; \
+            } \
+            LoxValue b = LoxStack_pop(stack); \
+            LoxValue a = LoxStack_pop(stack); \
+            LoxStack_push( \
+              stack,  \
+                left_lox_type##_VAL( \
+                  AS_##left_lox_type(a) op AS_##left_lox_type(b) \
+                ) \
+            ); \
         } while(false);
-    #define UNARY_OP(op) do { \
-            Value* value = LoxStack_rtop(stack); \
-            *value = op LoxStack_top(stack); \
-        } while(false);
+    #define UNARY_OP(op, lox_type) do { \
+            if (!IS_##lox_type(LoxStack_peek(stack, 0))) {\
+              runtimeError(self, "Expected Type %s", # lox_type); \
+              return LOX_INTERPRET_RUNTIME_ERROR; \
+            }\
+            *LoxStack_rtop(stack) = lox_type##_VAL(op AS_##lox_type(LoxStack_top(stack))); \
+            } while(false);
 
     self->chunk = chunk;
     self->instruction = chunk->code;
@@ -43,7 +56,7 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
         uint8_t instruction;
         #ifdef DEBUG_TRACE
         printf("    ");
-        for (Value* slot = self->stack.data; slot < self->stack.topElement; slot++) {
+        for (LoxValue* slot = self->stack.data; slot < self->stack.topElement; slot++) {
             printf("[ ");
             printValue(*slot);
             printf(" ]");
@@ -57,38 +70,38 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
         #endif
         switch (instruction = READ_BYTE(self)) {
             case OP_CONSTANT: {
-                Value constant = READ_CONST(self);
+                LoxValue constant = READ_CONST(self);
                 LoxStack_push(stack, constant);
                 break;
             }
             case OP_CONSTANT_LONG: {
-                Value constant = READ_CONST_LONG(self);
+                LoxValue constant = READ_CONST_LONG(self);
                 LoxStack_push(stack, constant);
                 break;
             }
             case OP_NEGATE:
-                UNARY_OP(-)
+                UNARY_OP(-, LOX_NUMBER)
                 break;
             case OP_NOT:
-                UNARY_OP(!)
+                UNARY_OP(!, LOX_BOOL)
                 break;
             case OP_ADD:
-                BINARY_OP(+)
+                BINARY_OP(+, LOX_NUMBER)
                 break;
             case OP_SUBSTRACT:
-                BINARY_OP(-)
+                BINARY_OP(-, LOX_NUMBER)
                 break;
             case OP_MULTIPLY:
-                BINARY_OP(*)
+                BINARY_OP(*, LOX_NUMBER)
                 break;
             case OP_DIVIDE:
-                BINARY_OP(/)
+                BINARY_OP(/, LOX_NUMBER)
                 break;
             case OP_AND:
-                BINARY_OP(&&)
+                BINARY_OP(&&, LOX_BOOL)
                 break;
             case OP_OR:
-                BINARY_OP(||)
+                BINARY_OP(||, LOX_BOOL)
                 break;
             case OP_RETURN:
                 printf("return ");

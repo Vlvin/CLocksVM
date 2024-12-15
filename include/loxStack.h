@@ -1,13 +1,14 @@
-#include <loxValue.h>
+#include <loxValueArray.h>
 #include <oneFileSTD.h>
 
 #define STACK_MAX 256
-#define STACK_FAILURE 192993123
+#define STACK_FAILURE 19237912879813
 #define STACK_SUCCESS 0
+#define STACK_FAILURE_VAL LOX_NUMBER_VAL(19237912879813)
 
 typedef struct LoxStack {
-    Value data[STACK_MAX];
-    Value *topElement;
+    LoxValue data[STACK_MAX];
+    LoxValue *topElement;
 } LoxStack;
 
 
@@ -15,9 +16,10 @@ typedef struct LoxStack {
 void LoxStack_init(LoxStack *self);
 void LoxStack_reset(LoxStack* self);
 void LoxStack_free(LoxStack* self);
-int LoxStack_push(LoxStack* self, Value value);
-Value LoxStack_top(LoxStack* self);
+int LoxStack_push(LoxStack* self, LoxValue value);
+LoxValue LoxStack_top(LoxStack* self);
 /// @return pointer to top
-Value *LoxStack_rtop(LoxStack* self);
-Value LoxStack_pop(LoxStack* self);
+LoxValue *LoxStack_rtop(LoxStack* self);
+LoxValue LoxStack_pop(LoxStack* self);
+LoxValue LoxStack_peek(LoxStack* self, size_t distance);
 size_t LoxStack_size(LoxStack* self);

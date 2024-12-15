@@ -1,7 +1,6 @@
 #include <loxCompiler.h>
 #include <loxToken.h>
 #include <bitsTricks.h>
-#include <stdarg.h>
 
 #ifdef DEBUG_PRINT_CODE
 #include <debug.h>
@@ -18,8 +17,7 @@ bool LoxCompiler_compile(LoxCompiler *self, const char* source, Chunk *chunk) {
     LoxParser_advance(&self->parser, &self->scanner);
     LoxParser_expression(&self->parser);
     LoxParser_consume(&self->parser, &self->scanner, TOKEN_SEMICOLON, "Expect end of expression");
-
-
+    LoxCompiler_end(self);
     LoxScanner_free(&self->scanner);
     return !self->parser.hadError;
 }
@@ -44,7 +42,7 @@ void LoxCompiler_free(LoxCompiler* self) {
     (*self) = (LoxCompiler){ 0 };
 }
 
-size_t LoxCompiler_makeConstant(LoxCompiler* self, Value value) {
+size_t LoxCompiler_makeConstant(LoxCompiler* self, LoxValue value) {
     return Chunk_addConstant(self->compilingChunk, value);
 }
 
@@ -67,7 +65,7 @@ void _LoxCompiler_emitReturn(LoxCompiler* self) {
     _LoxCompiler_emitByte(self, OP_RETURN);
 }
 
-void _LoxCompiler_emitConstant(LoxCompiler* self, Value value) {
+void _LoxCompiler_emitConstant(LoxCompiler* self, LoxValue value) {
     size_t constLocation = LoxCompiler_makeConstant(self, value);    
     size_t line = self->parser.previous.line;
     if (constLocation > 255) {
