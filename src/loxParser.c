@@ -4,52 +4,52 @@
 #include <loxChunk.h>
 #include <loxErrors.h>
 #include <loxCompiler.h>
-
 static LoxParseRule rules[] = {
-    [TOKEN_LEFT_PAREN] = {LoxParser_grouping, NULL, PREC_NONE},
-    [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
-    [TOKEN_DOT] = {NULL, NULL, PREC_NONE},
-    [TOKEN_MINUS] = {LoxParser_unary, LoxParser_binary, PREC_TERM},
-    [TOKEN_PLUS] = {NULL, LoxParser_binary, PREC_TERM},
-    [TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},
-    [TOKEN_SLASH] = {NULL, LoxParser_binary, PREC_FACTOR},
-    [TOKEN_STAR] = {NULL, LoxParser_binary, PREC_FACTOR},
-    [TOKEN_MOD] = {NULL, NULL, PREC_NONE},
-    [TOKEN_BANG] = {NULL, NULL, PREC_NONE},
-    [TOKEN_BANG_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREATER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_GREATER_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LESS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LESS_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_STRING] = {NULL, NULL, PREC_NONE},
-    [TOKEN_NUMBER] = {LoxParser_number, NULL, PREC_NONE},
-    [TOKEN_AND] = {NULL, NULL, PREC_NONE},
-    [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FALSE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_IF] = {NULL, NULL, PREC_NONE},
-    [TOKEN_NIL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_OR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_CONST] = {NULL, NULL, PREC_NONE},
-    [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
-    [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
-    [TOKEN_THIS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_TRUE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_VAR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_STATIC] = {NULL, NULL, PREC_NONE},
-    [TOKEN_INCLUDE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EOF] = {NULL, NULL, PREC_NONE}};
+    [TOKEN_LEFT_PAREN]    = {LoxParser_grouping, NULL,             PREC_NONE},
+    [TOKEN_RIGHT_PAREN]   = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_LEFT_BRACE]    = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_RIGHT_BRACE]   = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_COMMA]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_DOT]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_MINUS]         = {LoxParser_unary,    LoxParser_binary, PREC_TERM},
+    [TOKEN_PLUS]          = {NULL,               LoxParser_binary, PREC_TERM},
+    [TOKEN_SEMICOLON]     = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_SLASH]         = {NULL,               LoxParser_binary, PREC_FACTOR},
+    [TOKEN_STAR]          = {NULL,               LoxParser_binary, PREC_FACTOR},
+    [TOKEN_MOD]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_BANG]          = {LoxParser_unary,    NULL,             PREC_NONE},
+    [TOKEN_EQUAL]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_BANG_EQUAL]    = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_EQUAL_EQUAL]   = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_GREATER]       = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_GREATER_EQUAL] = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_LESS]          = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_LESS_EQUAL]    = {NULL,               LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_IDENTIFIER]    = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_STRING]        = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_NUMBER]        = {LoxParser_number,   NULL,             PREC_NONE},
+    [TOKEN_AND]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_CLASS]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_ELSE]          = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_FUN]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_FOR]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_IF]            = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_FALSE]         = {LoxParser_literal,  NULL,             PREC_NONE},
+    [TOKEN_TRUE]          = {LoxParser_literal,  NULL,             PREC_NONE},
+    [TOKEN_NIL]           = {LoxParser_literal,  NULL,             PREC_NONE},
+    [TOKEN_OR]            = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_CONST]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_PRINT]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_RETURN]        = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_SUPER]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_THIS]          = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_VAR]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_WHILE]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_STATIC]        = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_INCLUDE]       = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_ERROR]         = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_EOF]           = {NULL,               NULL,             PREC_NONE},
+};
 
 void LoxParser_init(LoxParser *self, LoxCompiler *masterCompiler)
 {
@@ -64,6 +64,7 @@ void LoxParser_free(LoxParser *self)
 {
   LoxParser_reset(self);
 }
+
 
 void LoxParser_advance(LoxParser *self, LoxScanner *scanner)
 {
@@ -82,7 +83,6 @@ void LoxParser_advance(LoxParser *self, LoxScanner *scanner)
 
 void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type, const char *error_message)
 {
-  printf("%d : %d  :: %d\n", self->previous.type, self->current.type, type);
   if (self->current.type != type)
   {
     self->hadError = true;
@@ -101,6 +101,7 @@ void LoxParser_number(LoxParser *self)
   double value = strtod(self->previous.start, NULL);
   _LoxCompiler_emitConstant(self->masterCompiler, LOX_NUMBER_VAL(value));
 }
+
 
 void LoxParser_grouping(LoxParser *self)
 {
@@ -155,8 +156,44 @@ void LoxParser_binary(LoxParser *self)
   case TOKEN_SLASH:
     _LoxCompiler_emitByte(compiler, OP_DIVIDE);
     break;
+  case TOKEN_BANG_EQUAL:
+    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_EQUALS, OP_NOT);
+    break;
+  case TOKEN_EQUAL_EQUAL:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_EQUALS);
+    break;
+  case TOKEN_GREATER:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_GREATER);
+    break;
+  case TOKEN_GREATER_EQUAL:
+    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_LESS, OP_NOT);
+    break;
+  case TOKEN_LESS:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_LESS);
+    break;
+  case TOKEN_LESS_EQUAL:
+    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_GREATER, OP_NOT);
+    break;
   }
 }
+
+void LoxParser_literal(LoxParser *self)
+{
+  switch (self->previous.type)
+  {
+    case TOKEN_TRUE:
+      _LoxCompiler_emitByte(self->masterCompiler, OP_TRUE);
+      break;
+    case TOKEN_FALSE:
+      _LoxCompiler_emitByte(self->masterCompiler, OP_FALSE);
+      break;
+    case TOKEN_NIL:
+      _LoxCompiler_emitByte(self->masterCompiler, OP_NIL);
+      break;
+    default: return;
+  }
+}
+
 void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedence)
 {
   LoxParser_advance(self, &self->masterCompiler->scanner);

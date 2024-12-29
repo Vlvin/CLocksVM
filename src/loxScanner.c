@@ -74,11 +74,11 @@ LoxToken LoxScanner_scanToken(LoxScanner* self) {
             );
         case '<':
             return LoxScanner_makeToken(self, 
-                LoxScanner_match(self, '=') ? TOKEN_LESS_EQUAL : TOKEN_EQUAL
+                LoxScanner_match(self, '=') ? TOKEN_LESS_EQUAL : TOKEN_LESS
             );
         case '>':
             return LoxScanner_makeToken(self, 
-                LoxScanner_match(self, '=') ? TOKEN_GREATER_EQUAL : TOKEN_EQUAL
+                LoxScanner_match(self, '=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER
             );
         case '/':
             return LoxScanner_makeToken(self, TOKEN_SLASH);
@@ -211,7 +211,7 @@ LoxToken LoxScanner_errorToken(LoxScanner *self, const char* message) {
 }
 
 TokenType checkKeyword(LoxScanner* self, int offset, const char* rest, TokenType type) {
-    (memcmp(rest, self->start+offset, strlen(rest)) == 0) ? type : TOKEN_IDENTIFIER;
+    return (memcmp(rest, self->start+offset, strlen(rest)) == 0) ? type : TOKEN_IDENTIFIER;
 }
 
 TokenType LoxScanner_identifierType(LoxScanner* self) {
@@ -229,7 +229,7 @@ TokenType LoxScanner_identifierType(LoxScanner* self) {
         case 'w': return checkKeyword(self, 1, "hile", TOKEN_WHILE);
         case 'f': 
             if (self->current - self->start > 1)
-                switch (self->start[0]) {
+                switch (self->start[1]) {
                     case 'a': return checkKeyword(self, 2, "lse", TOKEN_FALSE);
                     case 'o': return checkKeyword(self, 2, "r", TOKEN_FOR);
                     case 'u': return checkKeyword(self, 2, "n", TOKEN_FUN);
@@ -237,7 +237,7 @@ TokenType LoxScanner_identifierType(LoxScanner* self) {
             break;
         case 't': 
             if (self->current - self->start > 1)
-                switch (self->start[0]) {
+                switch (self->start[1]) {
                     case 'r': return checkKeyword(self, 2, "ue", TOKEN_TRUE);
                     case 'h': return checkKeyword(self, 2, "is", TOKEN_THIS);
                 }

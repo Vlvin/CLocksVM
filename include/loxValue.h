@@ -34,4 +34,8 @@ typedef struct {
 #define AS_LOX_NUMBER(value) ((value).as.number)
 
 
+bool LoxValue_isFalse(LoxValue self);
+bool LoxValue_equals(LoxValue self, LoxValue other);
+
+
 #endif

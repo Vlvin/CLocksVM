@@ -24,10 +24,11 @@ void LoxVM_free(LoxVM* self) {
 
 LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
     LoxStack* stack = &self->stack;
+
     #define READ_BYTE(vm) (*vm->instruction++)
     #define READ_CONST(vm) Chunk_getConstant(vm->chunk, READ_BYTE(vm))
     #define READ_CONST_LONG(vm) Chunk_getConstant(vm->chunk, forge_uint16((uint8_Pair){READ_BYTE(vm), READ_BYTE(vm)}))
-    #define BINARY_OP(op, left_lox_type) do { \
+    #define BINARY_OP(op, left_lox_type, output_lox_type) do { \
             if (!(IS_##left_lox_type(LoxStack_peek(stack, 0)) && IS_##left_lox_type(LoxStack_peek(stack, 1)))) { \
               runtimeError(self, "Runtime error %s %s", "Expected Type", # left_lox_type); \
               return LOX_INTERPRET_RUNTIME_ERROR; \
@@ -36,7 +37,7 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
             LoxValue a = LoxStack_pop(stack); \
             LoxStack_push( \
               stack,  \
-                left_lox_type##_VAL( \
+                output_lox_type##_VAL( \
                   AS_##left_lox_type(a) op AS_##left_lox_type(b) \
                 ) \
             ); \
@@ -83,25 +84,45 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
                 UNARY_OP(-, LOX_NUMBER)
                 break;
             case OP_NOT:
-                UNARY_OP(!, LOX_BOOL)
+                LoxStack_push(stack, LOX_BOOL_VAL(LoxValue_isFalse(LoxStack_pop(stack))));
+                break;
+            case OP_EQUALS: {
+                LoxValue b = LoxStack_pop(stack);
+                LoxValue a = LoxStack_pop(stack);
+                LoxStack_push(stack, LOX_BOOL_VAL(LoxValue_equals(a, b)));
+                break;
+            }
+            case OP_LESS:
+                BINARY_OP(<, LOX_NUMBER, LOX_BOOL)
+                break;
+            case OP_GREATER: 
+                BINARY_OP(>, LOX_NUMBER, LOX_BOOL)
                 break;
             case OP_ADD:
-                BINARY_OP(+, LOX_NUMBER)
+                BINARY_OP(+, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_SUBSTRACT:
-                BINARY_OP(-, LOX_NUMBER)
+                BINARY_OP(-, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_MULTIPLY:
-                BINARY_OP(*, LOX_NUMBER)
+                BINARY_OP(*, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_DIVIDE:
-                BINARY_OP(/, LOX_NUMBER)
+                BINARY_OP(/, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_AND:
-                BINARY_OP(&&, LOX_BOOL)
+                BINARY_OP(&&, LOX_BOOL, LOX_BOOL)
                 break;
             case OP_OR:
-                BINARY_OP(||, LOX_BOOL)
+                BINARY_OP(||, LOX_BOOL, LOX_BOOL)
+                break;
+            case OP_TRUE:
+                LoxStack_push(stack, LOX_BOOL_VAL(true));
+                break;
+            case OP_FALSE:
+                LoxStack_push(stack, LOX_BOOL_VAL(false));
+            case OP_NIL:
+                LoxStack_push(stack, LOX_NIL_VAL);
                 break;
             case OP_RETURN:
                 printf("return ");

@@ -32,13 +32,13 @@ void printValue(LoxValue value) {
   switch (value.type)
   {
   case LOX_BOOL:
-    printf("%g", AS_LOX_BOOL(value));
+    printf(AS_LOX_BOOL(value) ? "true" : "false");
     break;
   case LOX_NUMBER:
     printf("%g", AS_LOX_NUMBER(value));
     break;
   case LOX_NIL:
-    printf("%g", AS_LOX_NUMBER(value));
+    printf("nil");
     break;
   default:
     break;

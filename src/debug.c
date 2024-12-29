@@ -44,6 +44,18 @@ int disassembleInstruction(Chunk* chunk, size_t offset, const char* name) {
             break;
         CASE_SIMPLE(OP_OR)
             break;
+        CASE_SIMPLE(OP_TRUE)
+            break;
+        CASE_SIMPLE(OP_FALSE)
+            break;
+        CASE_SIMPLE(OP_NIL)
+            break;
+        CASE_SIMPLE(OP_EQUALS)
+            break;
+        CASE_SIMPLE(OP_GREATER)
+            break;
+        CASE_SIMPLE(OP_LESS)
+            break;
         case OP_CONSTANT: 
             return constantInstruction("OP_CONSTANT", chunk, offset);
             break;

@@ -7,20 +7,28 @@
 #include <loxLineTracker.h>
 
 typedef enum {
-    // STACK VARIABLES
+    // STACK VALUES
     OP_CONSTANT_LONG,
     OP_CONSTANT,
-    // UNARY
-    OP_NEGATE,
-    OP_NOT,
-    // BINARY
+    // UNARY OPERATIONS
+    OP_NEGATE, // MATH
+    OP_NOT, // LOGICAL
+    // BINARY MATH OPERATIONS
     OP_ADD,
     OP_SUBSTRACT,
     OP_DIVIDE,
     OP_MULTIPLY,
+    // BINARY LOGICAL COMPARISON
     OP_AND,
     OP_OR,
+    // BINARY MATH COMPARISON
+    OP_LESS,
+    OP_EQUALS,
+    OP_GREATER,
     // SIMPLE
+    OP_TRUE,
+    OP_FALSE,
+    OP_NIL,
     OP_RETURN
 } OpCode;
 

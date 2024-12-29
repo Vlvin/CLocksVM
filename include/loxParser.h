@@ -53,6 +53,7 @@ void LoxParser_number(LoxParser* self);
 void LoxParser_grouping(LoxParser* self);
 void LoxParser_unary(LoxParser* self);
 void LoxParser_binary(LoxParser* self);
+void LoxParser_literal(LoxParser *self);
 void LoxParser_parsePrecedence(LoxParser* self, LoxPrecedence precedance);
 
 #endif
