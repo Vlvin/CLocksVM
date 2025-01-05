@@ -28,22 +28,6 @@ size_t ValueArray_add(ValueArray* self, LoxValue value) {
 }
 
 
-void printValue(LoxValue value) {
-  switch (value.type)
-  {
-  case LOX_BOOL:
-    printf(AS_LOX_BOOL(value) ? "true" : "false");
-    break;
-  case LOX_NUMBER:
-    printf("%g", AS_LOX_NUMBER(value));
-    break;
-  case LOX_NIL:
-    printf("nil");
-    break;
-  default:
-    break;
-  }
-}
 
 const size_t ValueArray_size(ValueArray* self) {
     return self->size;

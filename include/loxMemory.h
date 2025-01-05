@@ -6,6 +6,9 @@
 // this fun is here for debug purpose
 void* reallocate(void* data, size_t oldSize, size_t newSize);
 
+#define ALLOCATE(type, size) \
+    (type*)reallocate(NULL, 0, (size)*sizeof(type))
+
 #define FREE_ARRAY(type, array, oldSize) \
     array = reallocate(array, oldSize*sizeof(type), 0)
 

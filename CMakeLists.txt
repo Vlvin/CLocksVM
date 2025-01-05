@@ -22,6 +22,7 @@ set(SOURCES
     ${SRC}/bitsTricks.c
     ${SRC}/debug.c
     ${SRC}/loxChunk.c
+    ${SRC}/loxObject.c
     ${SRC}/loxCLI.c
     ${SRC}/loxCompiler.c
     ${SRC}/loxErrors.c

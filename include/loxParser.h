@@ -49,6 +49,7 @@ void LoxParser_consume(LoxParser* self, LoxScanner *scanner, TokenType type, con
 inline static LoxParseRule* LoxParser_getRule(TokenType type);
 
 void LoxParser_expression(LoxParser* self);
+void LoxParser_string(LoxParser* self);
 void LoxParser_number(LoxParser* self);
 void LoxParser_grouping(LoxParser* self);
 void LoxParser_unary(LoxParser* self);

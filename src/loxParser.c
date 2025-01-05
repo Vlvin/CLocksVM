@@ -2,6 +2,7 @@
 #include <loxScanner.h>
 #include <loxParser.h>
 #include <loxChunk.h>
+#include <loxObject.h>
 #include <loxErrors.h>
 #include <loxCompiler.h>
 static LoxParseRule rules[] = {
@@ -26,7 +27,7 @@ static LoxParseRule rules[] = {
     [TOKEN_LESS]          = {NULL,               LoxParser_binary, PREC_EQUALITY},
     [TOKEN_LESS_EQUAL]    = {NULL,               LoxParser_binary, PREC_EQUALITY},
     [TOKEN_IDENTIFIER]    = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_STRING]        = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_STRING]        = {LoxParser_string,   NULL,             PREC_NONE},
     [TOKEN_NUMBER]        = {LoxParser_number,   NULL,             PREC_NONE},
     [TOKEN_AND]           = {NULL,               NULL,             PREC_NONE},
     [TOKEN_CLASS]         = {NULL,               NULL,             PREC_NONE},
@@ -94,6 +95,15 @@ void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type, con
 void LoxParser_expression(LoxParser *self)
 {
   LoxParser_parsePrecedence(self, PREC_ASSIGNMENT);
+}
+
+void LoxParser_string(LoxParser *self)
+{
+  _LoxCompiler_emitConstant(self->masterCompiler,
+    LOX_OBJECT_VAL( // for " at start      and for " at the end
+      copyString(self->previous.start + 1, self->previous.start + self->previous.size - 1)
+    )
+  );
 }
 
 void LoxParser_number(LoxParser *self)

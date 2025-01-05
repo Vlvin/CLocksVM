@@ -16,7 +16,6 @@ int ValueArray_free(ValueArray* self);
 size_t ValueArray_add(ValueArray* self, LoxValue value);
 
 
-void printValue(LoxValue value);
 
 const size_t ValueArray_size(ValueArray* self);
 const size_t ValueArray_capacity(ValueArray* self);
