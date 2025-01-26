@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/bitsTricks.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/bitsTricks.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/debug.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/debug.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCLI.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCLI.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxChunk.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxChunk.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCompiler.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCompiler.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxErrors.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxErrors.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxLineTracker.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxLineTracker.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxMemory.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxMemory.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxObject.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxObject.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxParser.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxParser.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxScanner.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxScanner.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxStack.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxStack.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxToken.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxToken.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxVM.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxVM.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValue.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValue.c.o.d"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValueArray.c.o"
+  "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValueArray.c.o.d"
+  "libCLocksCompiler_SRC.a"
+  "libCLocksCompiler_SRC.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/CLocksCompiler_SRC.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

@@ -3,6 +3,7 @@
 
 #include <oneFileSTD.h>
 #include <loxValue.h>
+#include <stdint.h>
 
 typedef enum {
     LOX_OBJECT_STRING = 0
@@ -19,6 +20,7 @@ typedef struct LoxString {
     LoxObject object;
     size_t size;
     char* bytes;
+    uint32_t hash;
 } LoxString;
 
 #define AS_LOX_STRING(value) ((LoxString*)AS_LOX_OBJECT(value))
@@ -27,9 +29,13 @@ typedef struct LoxString {
     (type*)allocateObject(sizeof(type), objectType);
 
 bool isObjType(LoxValue, LoxObject_t);
+uint32_t hashString(const char* str, size_t length);
 LoxString* copyString(const char* begin, const char* end);
-LoxString* allocateString(char* heapBytes, size_t size);
+LoxString* allocateString(char* heapBytes, size_t size, uint32_t hashCode);
+
 LoxObject* allocateObject(size_t size, LoxObject_t type);
+
+
 
 bool LoxObject_equals(LoxValue self, LoxValue other);
 void printObject(LoxValue value);

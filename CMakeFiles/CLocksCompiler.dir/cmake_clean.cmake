@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CLocksCompiler"
+  "CLocksCompiler.pdb"
+  "CMakeFiles/CLocksCompiler.dir/src/bitsTricks.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/bitsTricks.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/debug.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/debug.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxCLI.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxCLI.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxChunk.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxChunk.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxCompiler.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxCompiler.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxErrors.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxErrors.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxLineTracker.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxLineTracker.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxMemory.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxMemory.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxObject.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxObject.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxParser.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxParser.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxScanner.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxScanner.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxStack.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxStack.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxToken.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxToken.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxVM.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxVM.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxValue.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxValue.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/loxValueArray.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/loxValueArray.c.o.d"
+  "CMakeFiles/CLocksCompiler.dir/src/main.c.o"
+  "CMakeFiles/CLocksCompiler.dir/src/main.c.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/CLocksCompiler.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

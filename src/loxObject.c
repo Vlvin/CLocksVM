@@ -1,5 +1,6 @@
 #include <loxObject.h>
 #include <loxMemory.h>
+#include <stdint.h>
 
 
 
@@ -12,19 +13,30 @@ bool isObjType(LoxValue value, LoxObject_t type) {
 
 
 LoxString *copyString(const char* begin, const char* end) {
-    const size_t size = end - begin;
+    size_t size = end - begin;
     char* heapBytes = ALLOCATE(char, size + 1);
     memcpy(heapBytes, begin, size);
     heapBytes[size] = '\0';
-    return allocateString(heapBytes, size);
+    uint32_t hash = hashString(heapBytes, size);
+    return allocateString(heapBytes, size, hash);
 }
 
 
-LoxString* allocateString(char* heapBytes, size_t size) {
+LoxString* allocateString(char* heapBytes, size_t size, uint32_t hashCode) {
     LoxString* result = ALLOCATE_OBJECT(LoxString, LOX_OBJECT_STRING);
     result->size = size;
     result->bytes = heapBytes;
+    result->hash = hashCode;
     return result;
+}
+
+uint32_t hashString(const char* const str, size_t length) {
+  uint32_t hash = 919381917u;
+  for (int i = 0; i < length; i++) {
+    hash ^= (uint32_t)str[i];
+    hash *= 12345678;
+  }
+  return hash;
 }
 
 
@@ -57,10 +69,10 @@ void printObject(LoxValue value) {
     switch (LOX_OBJECT_TYPE(value))
     {
     case LOX_OBJECT_STRING:
-        printf(AS_LOX_CSTRING(value));
+        printf("%s", AS_LOX_CSTRING(value));
         break;
     default:
-        printf("<Object ar %p>", AS_LOX_OBJECT(value));
+        printf("<Object at %p>", AS_LOX_OBJECT(value));
         break;
     }
 }
