@@ -1,8 +1,9 @@
-./.*
-./build/
-./CMakeCache.txt
-./CMakeFiles
-./Makefile
-./cmake_install.cmake
-./compile_commands.json
-./
+.cache/
+.vim/
+build/
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+compile_commands.json
+
