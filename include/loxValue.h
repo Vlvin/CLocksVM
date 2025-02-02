@@ -23,9 +23,9 @@ typedef struct {
   } as;
 } LoxValue;
 
-#define LOX_BOOL_VAL(value) (LoxValue){LOX_BOOL, {.boolean = value}}
-#define LOX_NUMBER_VAL(value) (LoxValue){LOX_NUMBER, {.number = value}}
-#define LOX_OBJECT_VAL(value) (LoxValue){LOX_OBJECT, {.object = (LoxObject*)value}}
+#define LOX_BOOL_VAL(bool) (LoxValue){LOX_BOOL, {.boolean = bool}}
+#define LOX_NUMBER_VAL(num) (LoxValue){LOX_NUMBER, {.number = num}}
+#define LOX_OBJECT_VAL(obj) (LoxValue){LOX_OBJECT, {.object = (LoxObject*)obj}}
 #define LOX_NIL_VAL (LoxValue){LOX_NIL, {.number = 0}}
 
 // checks

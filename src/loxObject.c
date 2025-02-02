@@ -1,6 +1,7 @@
 #include <loxObject.h>
 #include <loxMemory.h>
 #include <stdint.h>
+#include <loxVM.h>
 
 
 
@@ -12,18 +13,18 @@ bool isObjType(LoxValue value, LoxObject_t type) {
 }
 
 
-LoxString *copyString(const char* begin, const char* end) {
+LoxString *copyString(LoxVM* vm, const char* begin, const char* end) {
     size_t size = end - begin;
     char* heapBytes = ALLOCATE(char, size + 1);
     memcpy(heapBytes, begin, size);
     heapBytes[size] = '\0';
     uint32_t hash = hashString(heapBytes, size);
-    return allocateString(heapBytes, size, hash);
+    return allocateString(vm, heapBytes, size);
 }
 
 
-LoxString* allocateString(char* heapBytes, size_t size, uint32_t hashCode) {
-    LoxString* result = ALLOCATE_OBJECT(LoxString, LOX_OBJECT_STRING);
+LoxString* allocateString(LoxVM* vm, char* heapBytes, size_t size) {
+    LoxString* result = ALLOCATE_OBJECT(vm, LoxString, LOX_OBJECT_STRING);
     result->size = size;
     result->bytes = heapBytes;
     result->hash = hashCode;
@@ -40,12 +41,50 @@ uint32_t hashString(const char* const str, size_t length) {
 }
 
 
-LoxObject* allocateObject(size_t size, LoxObject_t type) {
+LoxObject* allocateObject(LoxVM* vm, size_t size, LoxObject_t type) {
     LoxObject* object = ALLOCATE(LoxObject, size);
     object->type = type;
+    object->next = vm->objects;
+    vm->objects = object;
     return object;
 }
 
+
+LoxString* LoxString_concatenate(LoxVM* vm, LoxValue self, LoxValue other) {
+    size_t size = AS_LOX_STRING(self)->size + AS_LOX_STRING(other)->size;
+    LoxString* result =  allocateString(vm, ALLOCATE(char, size+1), size);
+    strcpy(result->bytes, AS_LOX_CSTRING(self));
+    strcat(result->bytes, AS_LOX_CSTRING(other));
+    return result;
+}
+
+
+void LoxObject_free(LoxObject* self) {
+    switch (self->type) {
+        case LOX_OBJECT_STRING: {
+            LoxString* self_str = (LoxString*)self;
+            FREE_ARRAY(char, self_str->bytes, self_str->size);
+            FREE(LoxString, self);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
+LoxObject* LoxObject_add(LoxVM* vm, LoxValue self, LoxValue other) {
+    if (LOX_OBJECT_TYPE(self) != LOX_OBJECT_TYPE(other)) {
+        return NULL;
+    }
+    switch (LOX_OBJECT_TYPE(self)) {
+        case LOX_OBJECT_STRING:
+            return (LoxObject*)LoxString_concatenate(vm, self, other);
+            break;
+        default: // unreachable
+            return NULL;
+    }
+}
 
 bool LoxObject_equals(LoxValue self, LoxValue other) {
     if (!(LOX_OBJECT_TYPE(self) == LOX_OBJECT_TYPE(other)))

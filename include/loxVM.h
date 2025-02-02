@@ -4,11 +4,14 @@
 #include <loxChunk.h>
 #include <loxStack.h>
 
-typedef struct {
+typedef struct LoxVM {
     Chunk* chunk;
     uint8_t* instruction;
     LoxStack stack;
+    LoxObject* objects;
 } LoxVM;
+
+extern LoxVM vm;
 
 typedef enum LoxResult {
     LOX_INTERPRET_OK,
@@ -20,6 +23,7 @@ void Lox_VM_printResult(LoxResult result);
 
 void LoxVM_init(LoxVM* self);
 void LoxVM_free(LoxVM* self);
+void LoxVM_freeObjects(LoxVM* self);
 
 LoxResult LoxVM_interpret(LoxVM* self, const char* source);
 LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk);

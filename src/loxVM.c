@@ -5,6 +5,9 @@
 #include <debug.h>
 #include <loxValue.h>
 #include <loxErrors.h>
+#include <loxObject.h>
+
+LoxVM vm;
 
 /**
  * @note
@@ -19,6 +22,17 @@ void LoxVM_init(LoxVM* self) {
 
 void LoxVM_free(LoxVM* self) {
     LoxStack_free(&self->stack);
+    LoxVM_freeObjects(self);
+}
+
+void LoxVM_freeObjects(LoxVM* self) {
+    LoxObject* cur = NULL;
+    LoxObject* next = self->objects;
+    while (next != NULL) {
+        cur = next;
+        next = next->next;
+        LoxObject_free(cur);
+    }
 }
 
 
@@ -98,7 +112,31 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
             case OP_GREATER: 
                 BINARY_OP(>, LOX_NUMBER, LOX_BOOL)
                 break;
-            case OP_ADD:
+            case OP_ADD: {
+                if (IS_LOX_OBJECT(LoxStack_peek(stack, 0)) && IS_LOX_OBJECT(LoxStack_peek(stack, 1))) {
+                    LoxValue b = LoxStack_pop(stack);
+                    LoxValue a = LoxStack_pop(stack);
+                    LoxStack_push(
+                        stack,
+                        LOX_OBJECT_VAL(LoxObject_add(self, a, b))
+                    );
+                } else if (IS_LOX_NUMBER(LoxStack_peek(stack, 0)) && IS_LOX_NUMBER(LoxStack_peek(stack, 1))) {
+                    LoxValue b = LoxStack_pop(stack);
+                    LoxValue a = LoxStack_pop(stack);
+                    LoxStack_push(
+                        stack, 
+                        LOX_NUMBER_VAL(
+                            AS_LOX_NUMBER(a) + AS_LOX_NUMBER(b)
+                        )
+                    );
+                } else {
+                    runtimeError(
+                        self, "Operands must be of equal types (two numbers, two objects, etc.)"
+                    );
+                    return LOX_INTERPRET_RUNTIME_ERROR;
+                }
+                break;
+            } 
                 BINARY_OP(+, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_SUBSTRACT:
@@ -161,6 +199,9 @@ LoxResult LoxVM_interpret(LoxVM* self, const char* source) {
     self->instruction = &chunk.code[0];
 
     LoxResult result = _LoxVM_run(self, &chunk);
+
+    Chunk_free(&chunk);
+    LoxCompiler_free(&compiler);
     return result;
 }
 

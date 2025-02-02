@@ -5,7 +5,7 @@
 #include <oneFileSTD.h>
 
 LoxResult lox_Repl() {
-    LoxVM vm;
+    // LoxVM vm;
     LoxVM_init(&vm);
     while (true) {
         // readline
@@ -31,7 +31,7 @@ LoxResult lox_runFile(const char* filename) {
     if (!source) 
         return LOX_INTERPRET_COMPILE_ERROR;
     // execute
-    LoxVM vm;
+    // LoxVM vm;
     LoxVM_init(&vm);
 
     LoxResult result = LoxVM_interpret(&vm, source);
