@@ -1,4 +1,0 @@
-/home/vlvin/Code/C/CLocksVM/build/CMakeFiles/CLocksCompiler_SRC.dir
-/home/vlvin/Code/C/CLocksVM/build/CMakeFiles/CLocksCompiler.dir
-/home/vlvin/Code/C/CLocksVM/build/CMakeFiles/edit_cache.dir
-/home/vlvin/Code/C/CLocksVM/build/CMakeFiles/rebuild_cache.dir
