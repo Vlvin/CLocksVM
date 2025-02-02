@@ -27,6 +27,7 @@ set(SOURCES
     ${SRC}/loxCompiler.c
     ${SRC}/loxErrors.c
     ${SRC}/loxLineTracker.c
+    ${SRC}/loxHashMap.c
     ${SRC}/loxMemory.c
     ${SRC}/loxParser.c
     ${SRC}/loxScanner.c

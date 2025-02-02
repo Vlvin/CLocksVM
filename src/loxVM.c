@@ -18,10 +18,12 @@ LoxVM vm;
 void LoxVM_init(LoxVM* self) {
     (*self) = (LoxVM){0};
     LoxStack_init(&self->stack);
+    LoxHashMap_init(&self->strings);
 }
 
 void LoxVM_free(LoxVM* self) {
     LoxStack_free(&self->stack);
+    LoxHashMap_free(&self->strings);
     LoxVM_freeObjects(self);
 }
 

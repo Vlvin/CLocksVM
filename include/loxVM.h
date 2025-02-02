@@ -3,11 +3,13 @@
 
 #include <loxChunk.h>
 #include <loxStack.h>
+#include <loxHashMap.h>
 
 typedef struct LoxVM {
     Chunk* chunk;
     uint8_t* instruction;
     LoxStack stack;
+    LoxHashMap strings;
     LoxObject* objects;
 } LoxVM;
 

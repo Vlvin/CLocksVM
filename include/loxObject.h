@@ -36,7 +36,7 @@ typedef struct LoxString {
 bool isObjType(LoxValue, LoxObject_t);
 uint32_t hashString(const char* str, size_t length);
 LoxString* copyString(LoxVM* vm, const char* begin, const char* end);
-LoxString* allocateString(LoxVM* vm, char* heapBytes, size_t size);
+LoxString* allocateString(LoxVM* vm, char* heapBytes, size_t size, uint32_t hashCode);
 LoxString* LoxString_concatenate(LoxVM* vm, LoxValue self, LoxValue other);
 
 LoxObject* allocateObject(LoxVM* vm, size_t size, LoxObject_t type);
