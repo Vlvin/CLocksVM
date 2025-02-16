@@ -13,7 +13,7 @@ void LoxHashMap_init(LoxHashMap *self) {
   self->entries = ALLOCATE(Entry, TABLE_INITIAL_SIZE);
   self->capacity = TABLE_INITIAL_SIZE;
   for (size_t i = 0; i < self->capacity; i++) {
-    self->entries[i].value = LOX_NIL_VAL; 
+    self->entries[i].value = LOX_NIL_VAL;
   }
   self->size = 0;
   self->count = 0;
@@ -97,8 +97,10 @@ Entry* _LoxHashMap_find(LoxHashMap* self, LoxString* key) {
     if (tombstone == NULL && cur->key == NULL && !IS_LOX_NIL(cur->value)) // cur is tombstone and 2nd line tombstone is null
       tombstone = cur;
     index = (index + 1) % self->capacity;
-    /*if (index == key->hash % (self->capacity - 1)) // only false*/
-    /*  break;*/
+    if (index == key->hash % self->capacity - 1) {// only false
+      assert(false && "You messed up with hashmap again");
+      break;
+    }
   }
   return NULL;
 }

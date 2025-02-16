@@ -17,6 +17,9 @@ LoxString *copyString(LoxVM* vm, const char* begin, const char* end) {
     size_t size = end - begin;
     uint32_t hash = hashString(begin, size);
     LoxString* interned = LoxHashMap_findString(&vm->strings, begin, size, hash);
+    if (interned != NULL) {
+      return interned;
+    }
     char* heapBytes = ALLOCATE(char, size + 1);
     memcpy(heapBytes, begin, size);
     heapBytes[size] = '\0';

@@ -1,6 +1,7 @@
 #ifndef ONE_FILE_STD
 #define ONE_FILE_STD
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
