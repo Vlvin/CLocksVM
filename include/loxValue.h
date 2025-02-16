@@ -8,9 +8,9 @@ typedef struct LoxString LoxString;
 
 typedef enum {
   LOX_BOOL,
+  LOX_NIL, 
   LOX_NUMBER,
-  LOX_OBJECT,
-  LOX_NIL
+  LOX_OBJECT
 } loxValueType;
 
 typedef struct {

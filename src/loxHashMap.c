@@ -1,4 +1,5 @@
 #include "loxObject.h"
+#include "loxValue.h"
 #include <loxHashMap.h>
 
 #include <loxMemory.h>
@@ -11,6 +12,9 @@
 void LoxHashMap_init(LoxHashMap *self) {
   self->entries = ALLOCATE(Entry, TABLE_INITIAL_SIZE);
   self->capacity = TABLE_INITIAL_SIZE;
+  for (size_t i = 0; i < self->capacity; i++) {
+    self->entries[i].value = LOX_NIL_VAL; 
+  }
   self->size = 0;
   self->count = 0;
 }
@@ -86,19 +90,36 @@ Entry* _LoxHashMap_find(LoxHashMap* self, LoxString* key) {
   Entry* tombstone = NULL;
   for (;;)
   {
-    Entry* cur = &self->entries[index];
+    Entry* cur = &(self->entries[index]);
     if (cur->key == NULL || strcmp(cur->key->bytes, key->bytes)) // has same key or just empty
       if (IS_LOX_NIL(cur->value))
         return tombstone ? tombstone : cur;
     if (tombstone == NULL && cur->key == NULL && !IS_LOX_NIL(cur->value)) // cur is tombstone and 2nd line tombstone is null
       tombstone = cur;
-    index = index + 1 % self->capacity;
-    if (index == key->hash % self->capacity - 1) // only false
-      break;
+    index = (index + 1) % self->capacity;
+    /*if (index == key->hash % (self->capacity - 1)) // only false*/
+    /*  break;*/
   }
   return NULL;
 }
 
+Entry* _LoxHashMap_findByChars(LoxHashMap* self, const char* begin, const size_t size, const size_t hash)
+{
+  char* temp = malloc(size);
+  strncpy(temp, begin, size);
+  LoxString key = (LoxString){ // this is untracked string object
+    (LoxObject){
+      LOX_OBJECT_STRING,
+        NULL
+    },
+      size,
+      temp,
+      hash
+  };
+  Entry* value = _LoxHashMap_find(self, &key);
+  free(temp);
+  return value;
+}
 
 void LoxHashMap_copy(LoxHashMap* self, LoxHashMap* dest) {
   for (size_t i = 0; i < self->capacity; i++) {

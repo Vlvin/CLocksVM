@@ -40,7 +40,6 @@ bool LoxHashMap_delete(LoxHashMap* self, LoxString* key);
 void LoxHashMap_adjust(LoxHashMap* self, size_t new_size);
 // shallow copy
 void LoxHashMap_copy(LoxHashMap* self, LoxHashMap* dest);
-
 LoxString* LoxHashMap_findString(LoxHashMap* self, const char* begin, size_t size, uint32_t hash);
 
 #endif

@@ -1,200 +1,200 @@
 [
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/bitsTricks.c.o -c /home/vlvin/Code/C/CLocksVM/src/bitsTricks.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/bitsTricks.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/bitsTricks.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/bitsTricks.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/bitsTricks.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/bitsTricks.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/debug.c.o -c /home/vlvin/Code/C/CLocksVM/src/debug.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/debug.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/debug.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/debug.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/debug.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/debug.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxChunk.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxChunk.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxChunk.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxChunk.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxChunk.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxChunk.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxChunk.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxObject.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxObject.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxObject.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxObject.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxObject.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxObject.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxObject.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxCLI.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxCLI.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxCLI.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxCLI.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxCLI.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxCLI.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCLI.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxCompiler.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxCompiler.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxCompiler.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxCompiler.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxCompiler.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxCompiler.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxCompiler.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxErrors.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxErrors.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxErrors.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxErrors.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxErrors.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxErrors.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxErrors.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxLineTracker.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxLineTracker.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxLineTracker.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxLineTracker.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxLineTracker.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxLineTracker.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxLineTracker.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxMemory.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxMemory.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxMemory.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxMemory.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxMemory.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxMemory.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxMemory.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxParser.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxParser.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxParser.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxParser.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxParser.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxParser.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxParser.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxScanner.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxScanner.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxScanner.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxScanner.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxScanner.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxScanner.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxScanner.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxStack.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxStack.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxStack.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxStack.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxStack.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxStack.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxStack.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxToken.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxToken.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxToken.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxToken.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxToken.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxToken.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxToken.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxValue.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxValue.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxValue.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxValue.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxValue.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxValue.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValue.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxValueArray.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxValueArray.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxValueArray.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxValueArray.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxValueArray.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxValueArray.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxValueArray.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxVM.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxVM.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxVM.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler_SRC.dir/src/loxVM.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxVM.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxVM.c",
   "output": "CMakeFiles/CLocksCompiler_SRC.dir/src/loxVM.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/main.c.o -c /home/vlvin/Code/C/CLocksVM/src/main.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/main.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/main.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/main.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/main.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/main.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/bitsTricks.c.o -c /home/vlvin/Code/C/CLocksVM/src/bitsTricks.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/bitsTricks.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/bitsTricks.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/bitsTricks.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/bitsTricks.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/bitsTricks.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/debug.c.o -c /home/vlvin/Code/C/CLocksVM/src/debug.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/debug.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/debug.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/debug.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/debug.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/debug.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxChunk.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxChunk.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxChunk.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxChunk.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxChunk.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxChunk.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxChunk.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxObject.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxObject.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxObject.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxObject.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxObject.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxObject.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxObject.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxCLI.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxCLI.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxCLI.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxCLI.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxCLI.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxCLI.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxCLI.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxCompiler.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxCompiler.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxCompiler.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxCompiler.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxCompiler.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxCompiler.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxCompiler.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxErrors.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxErrors.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxErrors.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxErrors.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxErrors.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxErrors.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxErrors.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxLineTracker.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxLineTracker.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxLineTracker.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxLineTracker.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxLineTracker.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxLineTracker.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxLineTracker.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxMemory.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxMemory.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxMemory.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxMemory.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxMemory.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxMemory.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxMemory.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxParser.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxParser.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxParser.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxParser.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxParser.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxParser.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxParser.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxScanner.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxScanner.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxScanner.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxScanner.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxScanner.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxScanner.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxScanner.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxStack.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxStack.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxStack.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxStack.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxStack.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxStack.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxStack.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxToken.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxToken.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxToken.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxToken.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxToken.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxToken.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxToken.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxValue.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxValue.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxValue.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxValue.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxValue.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxValue.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxValue.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxValueArray.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxValueArray.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxValueArray.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxValueArray.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxValueArray.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxValueArray.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxValueArray.c.o"
 },
 {
-  "directory": "/home/vlvin/Code/C/CLocksVM",
-  "command": "/run/current-system/sw/bin/cc  -I/home/vlvin/Code/C/CLocksVM/include  -o CMakeFiles/CLocksCompiler.dir/src/loxVM.c.o -c /home/vlvin/Code/C/CLocksVM/src/loxVM.c",
-  "file": "/home/vlvin/Code/C/CLocksVM/src/loxVM.c",
+  "directory": "/home/vlvin/Code/C/CLocksCompiler/build",
+  "command": "/usr/bin/gcc -DDEBUG_PRINT_CODE -DDEBUG_TRACE -DNDEBUG -I/home/vlvin/Code/C/CLocksCompiler/include -g -o CMakeFiles/CLocksCompiler.dir/src/loxVM.c.o -c /home/vlvin/Code/C/CLocksCompiler/src/loxVM.c",
+  "file": "/home/vlvin/Code/C/CLocksCompiler/src/loxVM.c",
   "output": "CMakeFiles/CLocksCompiler.dir/src/loxVM.c.o"
 }
 ]
