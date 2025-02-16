@@ -13,8 +13,7 @@ bool isObjType(LoxValue value, LoxObject_t type) {
 }
 
 
-LoxString *copyString(LoxVM* vm, const char* begin, const char* end) {
-    size_t size = end - begin;
+LoxString *copyString(LoxVM* vm, const char* begin, size_t size) {
     uint32_t hash = hashString(begin, size);
     LoxString* interned = LoxHashMap_findString(&vm->strings, begin, size, hash);
     if (interned != NULL) {

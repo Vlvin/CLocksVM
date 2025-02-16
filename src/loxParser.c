@@ -101,7 +101,7 @@ void LoxParser_string(LoxParser *self)
 {
   _LoxCompiler_emitConstant(self->masterCompiler,
     LOX_OBJECT_VAL( // for " at start      and for " at the end
-      copyString(&vm, self->previous.start + 1, self->previous.start + self->previous.size - 1)
+      copyString(&vm, self->previous.start + 1, self->previous.size)
     )
   );
 }

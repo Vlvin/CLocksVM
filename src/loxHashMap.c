@@ -47,19 +47,18 @@ bool LoxHashMap_get(LoxHashMap* self, LoxString* key, LoxValue* value) {
   if (self->count == 0)
     return false;
   Entry* cur = _LoxHashMap_find(self, key);
-  if (cur == NULL)
+  if (cur->key == NULL)
     return false;
   *value = cur->value;
   return true;
 }
 
-bool LoxHashMap_set(LoxHashMap* self, LoxString* key, LoxValue value) {
+bool LoxHashMap_set(LoxHashMap* self, LoxString* key, LoxValue val) {
   if (self->size + 1 > self->capacity * TABLE_MAX_LOAD) {
     int capacity = GROW_CAPACITY(capacity);
     LoxHashMap_adjust(self, capacity);
   }
-  Entry* cur = _LoxHashMap_find(self, key);
-  
+  Entry* cur = _LoxHashMap_find(self, key); 
   const bool isNewKey = cur->key == NULL;
 
   if (isNewKey) {
@@ -70,7 +69,7 @@ bool LoxHashMap_set(LoxHashMap* self, LoxString* key, LoxValue value) {
   }
   
   cur->key = key;
-  cur->value = value;
+  cur->value = val;
   
   return isNewKey;
 }
@@ -91,9 +90,11 @@ Entry* _LoxHashMap_find(LoxHashMap* self, LoxString* key) {
   for (;;)
   {
     Entry* cur = &(self->entries[index]);
-    if (cur->key == NULL || strcmp(cur->key->bytes, key->bytes)) // has same key or just empty
+    if (cur->key == NULL || !strcmp(cur->key->bytes, key->bytes)) {// has same key or just empty
       if (IS_LOX_NIL(cur->value))
-        return tombstone ? tombstone : cur;
+        return tombstone != NULL ? tombstone : cur;
+      return cur;
+    }
     if (tombstone == NULL && cur->key == NULL && !IS_LOX_NIL(cur->value)) // cur is tombstone and 2nd line tombstone is null
       tombstone = cur;
     index = (index + 1) % self->capacity;

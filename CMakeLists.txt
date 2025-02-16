@@ -41,6 +41,15 @@ set(SOURCES
 add_library("${PROJECT_NAME}_SRC" ${SOURCES})
 target_include_directories("${PROJECT_NAME}_SRC" PUBLIC ${INCLUDE_DIRS})
 
+
+add_executable(hash-bench test/hash_map_bench.c)
+target_include_directories(hash-bench PRIVATE ${INCLUDE_DIRS})
+target_link_libraries(hash-bench "${PROJECT_NAME}_SRC")
+add_test(NAME hash-bench COMMAND hash-bench)
+
+# Enable testing
+enable_testing()
+
 add_executable(${PROJECT_NAME} ${SRC}/main.c ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_SRC")
