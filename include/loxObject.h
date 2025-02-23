@@ -25,7 +25,7 @@ typedef struct LoxString {
     LoxObject object;
     size_t size;
     char* bytes;
-    uint32_t hash;
+    size_t hash;
 } LoxString;
 
 #define AS_LOX_STRING(value) ((LoxString*)AS_LOX_OBJECT(value))

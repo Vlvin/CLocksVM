@@ -1,21 +1,22 @@
 #include <time.h>
 #include <oneFileSTD.h>
-
+#include <loxValue.h>
 #include <loxVM.h>
 #include <loxHashMap.h>
 #include <loxObject.h>
 #include <loxMemory.h>
 
-#define NUM_ENTRIES 100000
+#define NUM_ENTRIES 1000000
 
 /*LoxVM vm; // dummy VM to enable memory.c compilation*/
 
 static int benchmarkTable() {
     LoxHashMap table;
     LoxHashMap_init(&table);
-
+    int II = 258012;
     // Measure insertion time
     clock_t start = clock();
+    LoxString *bugkey = copyString(&vm, "key258012", 9);
     for (int i = 0; i < NUM_ENTRIES; i++) {
         char key[32];
         snprintf(key, sizeof(key), "key%d", i);

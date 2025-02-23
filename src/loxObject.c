@@ -39,7 +39,7 @@ LoxString* allocateString(LoxVM* vm, char* heapBytes, size_t size, uint32_t hash
 uint32_t hashString(const char* const str, size_t length) {
   uint32_t hash = 919381917u;
   for (int i = 0; i < length; i++) {
-    hash ^= (uint32_t)str[i];
+    hash ^= (size_t)str[i];
     hash *= 12345678;
   }
   return hash;

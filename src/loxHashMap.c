@@ -3,6 +3,7 @@
 #include <loxHashMap.h>
 
 #include <loxMemory.h>
+#include <stdint.h>
 #include <string.h>
 
 #define TABLE_INITIAL_SIZE 8
@@ -90,7 +91,7 @@ Entry* _LoxHashMap_find(LoxHashMap* self, LoxString* key) {
   for (;;)
   {
     Entry* cur = &(self->entries[index]);
-    if (cur->key == NULL || !strcmp(cur->key->bytes, key->bytes)) {// has same key or just empty
+    if (cur->key == NULL || cur->key == key) {// has same key or just empty
       if (IS_LOX_NIL(cur->value))
         return tombstone != NULL ? tombstone : cur;
       return cur;
@@ -106,7 +107,7 @@ Entry* _LoxHashMap_find(LoxHashMap* self, LoxString* key) {
   return NULL;
 }
 
-Entry* _LoxHashMap_findByChars(LoxHashMap* self, const char* begin, const size_t size, const size_t hash)
+Entry* _LoxHashMap_findByChars(LoxHashMap* self, const char* begin, const size_t size, const uint32_t hash)
 {
   char* temp = malloc(size);
   strncpy(temp, begin, size);
@@ -125,6 +126,7 @@ Entry* _LoxHashMap_findByChars(LoxHashMap* self, const char* begin, const size_t
 }
 
 void LoxHashMap_copy(LoxHashMap* self, LoxHashMap* dest) {
+  dest->size = dest->count = 0;
   for (size_t i = 0; i < self->capacity; i++) {
     Entry* cur = &self->entries[i];
     if (cur->key != NULL) { // not empty
@@ -147,7 +149,7 @@ LoxString* LoxHashMap_findString(LoxHashMap* self, const char* begin, size_t siz
       if (IS_LOX_NIL(cur->value)) return NULL;
     } else if (cur->key->size == size
           && cur->key->hash == hash
-          && memcmp(cur->key, begin, size)
+          && !memcmp(cur->key->bytes, begin, size)
     ) {
       return cur->key;
     }
