@@ -138,7 +138,7 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
                     return LOX_INTERPRET_RUNTIME_ERROR;
                 }
                 break;
-            } 
+            }
                 BINARY_OP(+, LOX_NUMBER, LOX_NUMBER)
                 break;
             case OP_SUBSTRACT:
@@ -161,18 +161,21 @@ LoxResult _LoxVM_run(LoxVM* self, Chunk* chunk) {
                 break;
             case OP_FALSE:
                 LoxStack_push(stack, LOX_BOOL_VAL(false));
+                break;
             case OP_NIL:
                 LoxStack_push(stack, LOX_NIL_VAL);
                 break;
-            case OP_RETURN:
-                printf("return ");
+            case OP_PRINT:
                 printValue(LoxStack_pop(stack));
-                printf("\n\n");
+                printf("\n");
+                break;
+            case OP_RETURN:
+                /*printf("return ");*/
+                /*printValue(LoxStack_pop(stack));*/
+                /*printf("\n\n");*/
                 return LOX_INTERPRET_OK;
         }
-        printf("\n");
     }
-    printf("\n\n");
     return LOX_INTERPRET_RUNTIME_ERROR;
 
     #undef READ_BYTE

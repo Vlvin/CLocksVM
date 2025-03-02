@@ -1,6 +1,7 @@
 #ifndef LOX_PARSER_H
 #define LOX_PARSER_H
 
+
 #include <loxToken.h>
 #include <loxScanner.h>
 
@@ -46,8 +47,13 @@ void LoxParser_reset(LoxParser* self);
 void LoxParser_free(LoxParser* self);
 void LoxParser_advance(LoxParser* self, LoxScanner *scanner);
 void LoxParser_consume(LoxParser* self, LoxScanner *scanner, TokenType type, const char* error_message);
+bool LoxParser_check(LoxParser* self, TokenType type);
+bool LoxParser_match(LoxParser *self, LoxScanner* scanner, TokenType type);
 inline static LoxParseRule* LoxParser_getRule(TokenType type);
 
+void LoxParser_declaration(LoxParser* self, LoxScanner* scanner);
+void LoxParser_statement(LoxParser* self, LoxScanner* scanner);
+void LoxParser_printStatement(LoxParser* self, LoxScanner* scanner);
 void LoxParser_expression(LoxParser* self);
 void LoxParser_string(LoxParser* self);
 void LoxParser_number(LoxParser* self);

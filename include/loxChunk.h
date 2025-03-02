@@ -29,7 +29,9 @@ typedef enum {
     OP_TRUE,
     OP_FALSE,
     OP_NIL,
-    OP_RETURN
+    OP_RETURN,
+    // STATEMENTS
+    OP_PRINT,
 } OpCode;
 
 typedef struct Chunk {

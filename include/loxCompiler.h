@@ -1,6 +1,7 @@
 #ifndef LOX_COMPILER_H
 #define LOX_COMPILER_H
 
+#include "loxToken.h"
 #include <loxScanner.h>
 #include <loxParser.h>
 #include <loxChunk.h>

@@ -25,7 +25,7 @@ void errorAtCurrent(LoxParser *parser, const char *message)
 
 void errorAt(LoxParser *parser, LoxToken *token, const char *message)
 {
-  fprintf(stderr, "Error \nin %s at line %d", "module", token->line);
+  fprintf(stderr, "Error in %s at line %lu", "module", token->line);
 
   if (token->type == TOKEN_EOF)
   {
@@ -37,7 +37,7 @@ void errorAt(LoxParser *parser, LoxToken *token, const char *message)
   }
   else
   {
-    fprintf(stderr, " at '%.*s'", token->size, token->start);
+    fprintf(stderr, " at '%.*s'", (int)(token->size), token->start);
   }
 
   fprintf(stderr, " : %s\n", message);

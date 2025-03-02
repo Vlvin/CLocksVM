@@ -1,4 +1,5 @@
 
+#include "loxToken.h"
 #include <loxScanner.h>
 #include <loxParser.h>
 #include <loxChunk.h>
@@ -66,7 +67,9 @@ void LoxParser_free(LoxParser *self)
   LoxParser_reset(self);
 }
 
-
+bool LoxParser_check(LoxParser *self, TokenType type) {
+  return self->current.type == type;
+}
 void LoxParser_advance(LoxParser *self, LoxScanner *scanner)
 {
   self->previous = self->current;
@@ -92,6 +95,29 @@ void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type, con
   LoxParser_advance(self, scanner);
 }
 
+void LoxParser_statement(LoxParser *self, LoxScanner* scanner) {
+  if (LoxParser_match(self, scanner, TOKEN_PRINT)) {
+    LoxParser_printStatement(self, scanner);
+  }
+}
+
+void LoxParser_printStatement(LoxParser* self, LoxScanner* scanner) {
+  LoxParser_expression(self);
+  LoxParser_consume(self, scanner, TOKEN_SEMICOLON, "Expected ';' at the end of statement");
+  _LoxCompiler_emitByte(self->masterCompiler, OP_PRINT);
+}
+
+bool LoxParser_match(LoxParser *self, LoxScanner* scanner, TokenType type) {
+    if (!LoxParser_check(self, type))
+        return false;
+    LoxParser_advance(self, scanner);
+    return true;
+}
+
+void LoxParser_declaration(LoxParser* self, LoxScanner* scanner) {
+  LoxParser_statement(self, scanner);
+}
+
 void LoxParser_expression(LoxParser *self)
 {
   LoxParser_parsePrecedence(self, PREC_ASSIGNMENT);
@@ -101,7 +127,7 @@ void LoxParser_string(LoxParser *self)
 {
   _LoxCompiler_emitConstant(self->masterCompiler,
     LOX_OBJECT_VAL( // for " at start      and for " at the end
-      copyString(&vm, self->previous.start + 1, self->previous.size)
+      copyString(&vm, self->previous.start + 1, self->previous.size - 2)
     )
   );
 }
