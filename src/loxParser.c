@@ -1,81 +1,74 @@
 
 #include "loxToken.h"
-#include <loxScanner.h>
-#include <loxParser.h>
+#include <bitsTricks.h>
 #include <loxChunk.h>
-#include <loxObject.h>
-#include <loxErrors.h>
 #include <loxCompiler.h>
+#include <loxErrors.h>
+#include <loxObject.h>
+#include <loxParser.h>
+#include <loxScanner.h>
+#include <stdint.h>
 static LoxParseRule rules[] = {
-    [TOKEN_LEFT_PAREN]    = {LoxParser_grouping, NULL,             PREC_NONE},
-    [TOKEN_RIGHT_PAREN]   = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_LEFT_BRACE]    = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_RIGHT_BRACE]   = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_COMMA]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_DOT]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_MINUS]         = {LoxParser_unary,    LoxParser_binary, PREC_TERM},
-    [TOKEN_PLUS]          = {NULL,               LoxParser_binary, PREC_TERM},
-    [TOKEN_SEMICOLON]     = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_SLASH]         = {NULL,               LoxParser_binary, PREC_FACTOR},
-    [TOKEN_STAR]          = {NULL,               LoxParser_binary, PREC_FACTOR},
-    [TOKEN_MOD]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_BANG]          = {LoxParser_unary,    NULL,             PREC_NONE},
-    [TOKEN_EQUAL]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_BANG_EQUAL]    = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_EQUAL_EQUAL]   = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_GREATER]       = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_GREATER_EQUAL] = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_LESS]          = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_LESS_EQUAL]    = {NULL,               LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_IDENTIFIER]    = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_STRING]        = {LoxParser_string,   NULL,             PREC_NONE},
-    [TOKEN_NUMBER]        = {LoxParser_number,   NULL,             PREC_NONE},
-    [TOKEN_AND]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_CLASS]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_ELSE]          = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_FUN]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_FOR]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_IF]            = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_FALSE]         = {LoxParser_literal,  NULL,             PREC_NONE},
-    [TOKEN_TRUE]          = {LoxParser_literal,  NULL,             PREC_NONE},
-    [TOKEN_NIL]           = {LoxParser_literal,  NULL,             PREC_NONE},
-    [TOKEN_OR]            = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_CONST]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_PRINT]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_RETURN]        = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_SUPER]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_THIS]          = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_VAR]           = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_WHILE]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_STATIC]        = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_INCLUDE]       = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_ERROR]         = {NULL,               NULL,             PREC_NONE},
-    [TOKEN_EOF]           = {NULL,               NULL,             PREC_NONE},
+    [TOKEN_LEFT_PAREN] = {LoxParser_grouping, NULL, PREC_NONE},
+    [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
+    [TOKEN_DOT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_MINUS] = {LoxParser_unary, LoxParser_binary, PREC_TERM},
+    [TOKEN_PLUS] = {NULL, LoxParser_binary, PREC_TERM},
+    [TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},
+    [TOKEN_SLASH] = {NULL, LoxParser_binary, PREC_FACTOR},
+    [TOKEN_STAR] = {NULL, LoxParser_binary, PREC_FACTOR},
+    [TOKEN_MOD] = {NULL, NULL, PREC_NONE},
+    [TOKEN_BANG] = {LoxParser_unary, NULL, PREC_NONE},
+    [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
+    [TOKEN_BANG_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_EQUAL_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_GREATER] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_GREATER_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_LESS] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_LESS_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
+    [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
+    [TOKEN_STRING] = {LoxParser_string, NULL, PREC_NONE},
+    [TOKEN_NUMBER] = {LoxParser_number, NULL, PREC_NONE},
+    [TOKEN_AND] = {NULL, NULL, PREC_NONE},
+    [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
+    [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_IF] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FALSE] = {LoxParser_literal, NULL, PREC_NONE},
+    [TOKEN_TRUE] = {LoxParser_literal, NULL, PREC_NONE},
+    [TOKEN_NIL] = {LoxParser_literal, NULL, PREC_NONE},
+    [TOKEN_OR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_CONST] = {NULL, NULL, PREC_NONE},
+    [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
+    [TOKEN_THIS] = {NULL, NULL, PREC_NONE},
+    [TOKEN_VAR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_STATIC] = {NULL, NULL, PREC_NONE},
+    [TOKEN_INCLUDE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };
 
-void LoxParser_init(LoxParser *self, LoxCompiler *masterCompiler)
-{
+void LoxParser_init(LoxParser *self, LoxCompiler *masterCompiler) {
   LoxParser_reset(self);
   self->masterCompiler = masterCompiler;
 }
-void LoxParser_reset(LoxParser *self)
-{
-  (*self) = (LoxParser){0};
-}
-void LoxParser_free(LoxParser *self)
-{
-  LoxParser_reset(self);
-}
+void LoxParser_reset(LoxParser *self) { (*self) = (LoxParser){0}; }
+void LoxParser_free(LoxParser *self) { LoxParser_reset(self); }
 
 bool LoxParser_check(LoxParser *self, TokenType type) {
   return self->current.type == type;
 }
-void LoxParser_advance(LoxParser *self, LoxScanner *scanner)
-{
+void LoxParser_advance(LoxParser *self, LoxScanner *scanner) {
   self->previous = self->current;
 
-  while (true)
-  {
+  while (true) {
     self->current = LoxScanner_scanToken(scanner);
 
     if (self->current.type != TOKEN_ERROR)
@@ -85,75 +78,138 @@ void LoxParser_advance(LoxParser *self, LoxScanner *scanner)
   }
 }
 
-void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type, const char *error_message)
-{
-  if (self->current.type != type)
-  {
+void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type,
+                       const char *error_message) {
+  if (self->current.type != type) {
     self->hadError = true;
     errorAtCurrent(self, error_message);
   }
   LoxParser_advance(self, scanner);
 }
 
-void LoxParser_statement(LoxParser *self, LoxScanner* scanner) {
+void LoxParser_statement(LoxParser *self, LoxScanner *scanner) {
   if (LoxParser_match(self, scanner, TOKEN_PRINT)) {
     LoxParser_printStatement(self, scanner);
+  } else {
+    LoxParser_expressionStatement(self, scanner);
   }
 }
 
-void LoxParser_printStatement(LoxParser* self, LoxScanner* scanner) {
+void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner) {
   LoxParser_expression(self);
-  LoxParser_consume(self, scanner, TOKEN_SEMICOLON, "Expected ';' at the end of statement");
+  LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
+                    "Expected ';' at the end of the expression");
+  _LoxCompiler_emitByte(self->masterCompiler, OP_POP);
+}
+
+void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner) {
+  LoxParser_expression(self);
+  LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
+                    "Expected ';' at the end of statement");
   _LoxCompiler_emitByte(self->masterCompiler, OP_PRINT);
 }
 
-bool LoxParser_match(LoxParser *self, LoxScanner* scanner, TokenType type) {
-    if (!LoxParser_check(self, type))
-        return false;
+bool LoxParser_match(LoxParser *self, LoxScanner *scanner, TokenType type) {
+  if (!LoxParser_check(self, type))
+    return false;
+  LoxParser_advance(self, scanner);
+  return true;
+}
+
+void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
+  uint16_t name =
+      LoxParser_parseVariable(self, scanner, "Expected variable name.");
+  if (LoxParser_match(self, scanner, TOKEN_EQUAL)) {
+    LoxParser_expression(self);
+  } else {
+    _LoxCompiler_emitByte(self->masterCompiler, TOKEN_NIL);
+  }
+  LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
+                    "Expected ';' after variable declaration");
+
+  LoxParser_defineVariable(self, name);
+}
+
+void LoxParser_defineVariable(LoxParser *self, uint16_t name) {
+  if (name < 256) { // simple const
+    uint8_t index = (uint8_t)name;
+    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_DEFINE_GLOBAL, index);
+  } else { // long const
+    uint8_Pair index = split_uint16(name);
+    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_DEFINE_GLOBAL_LONG,
+                           index.first, index.second);
+  }
+}
+
+uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
+                                 const char *errorMessage) {
+  LoxParser_consume(self, scanner, TOKEN_SEMICOLON, errorMessage);
+  LoxValue variableName = LoxToken_toString(self->previous);
+  size_t variableNameIndex =
+      _LoxCompiler_emitConstant(self->masterCompiler, variableName);
+  return variableNameIndex;
+}
+
+void LoxParser_declaration(LoxParser *self, LoxScanner *scanner) {
+  if (LoxParser_match(self, scanner, TOKEN_VAR)) {
+    LoxParser_varDeclaration(self, scanner);
+  } else {
+    LoxParser_statement(self, scanner);
+  }
+  if (self->panicMode)
+    LoxParser_syncronize(self, scanner);
+}
+
+void LoxParser_syncronize(LoxParser *self, LoxScanner *scanner) {
+  self->panicMode = false;
+  while (self->current.type != TOKEN_EOF) {
+#define PASS
+    switch (self->current.type) {
+    case TOKEN_CLASS:
+    case TOKEN_FUN:
+    case TOKEN_VAR:
+    case TOKEN_IF:
+    case TOKEN_FOR:
+    case TOKEN_WHILE:
+    case TOKEN_PRINT:
+    case TOKEN_RETURN:
+      return;
+    default:
+      PASS;
+    }
     LoxParser_advance(self, scanner);
-    return true;
+  }
 }
 
-void LoxParser_declaration(LoxParser* self, LoxScanner* scanner) {
-  LoxParser_statement(self, scanner);
-}
-
-void LoxParser_expression(LoxParser *self)
-{
+void LoxParser_expression(LoxParser *self) {
   LoxParser_parsePrecedence(self, PREC_ASSIGNMENT);
 }
 
-void LoxParser_string(LoxParser *self)
-{
-  _LoxCompiler_emitConstant(self->masterCompiler,
-    LOX_OBJECT_VAL( // for " at start      and for " at the end
-      copyString(&vm, self->previous.start + 1, self->previous.size - 2)
-    )
-  );
+void LoxParser_string(LoxParser *self) {
+  _LoxCompiler_emitConstant(
+      self->masterCompiler,
+      LOX_OBJECT_VAL( // for " at start      and for " at the end
+          copyString(&vm, self->previous.start + 1, self->previous.size - 2)));
 }
 
-void LoxParser_number(LoxParser *self)
-{
+void LoxParser_number(LoxParser *self) {
   double value = strtod(self->previous.start, NULL);
   _LoxCompiler_emitConstant(self->masterCompiler, LOX_NUMBER_VAL(value));
 }
 
-
-void LoxParser_grouping(LoxParser *self)
-{
+void LoxParser_grouping(LoxParser *self) {
   LoxParser_expression(self);
-  LoxParser_consume(self, &self->masterCompiler->scanner, TOKEN_RIGHT_PAREN, "Expect ')' after expression");
+  LoxParser_consume(self, &self->masterCompiler->scanner, TOKEN_RIGHT_PAREN,
+                    "Expect ')' after expression");
 }
-void LoxParser_unary(LoxParser *self)
-{
+void LoxParser_unary(LoxParser *self) {
   TokenType operator= self->previous.type;
 
   LoxParseRule *rule = LoxParser_getRule(operator);
   LoxParser_parsePrecedence(self, (LoxPrecedence)(rule->precedence + 1));
 
   LoxCompiler *compiler = self->masterCompiler;
-  switch (operator)
-  {
+  switch (operator) {
   case TOKEN_MINUS:
     _LoxCompiler_emitByte(compiler, OP_NEGATE);
     break;
@@ -165,21 +221,18 @@ void LoxParser_unary(LoxParser *self)
   }
 }
 
-inline static LoxParseRule *LoxParser_getRule(TokenType type)
-{
+inline static LoxParseRule *LoxParser_getRule(TokenType type) {
   return &rules[type];
 }
 
-void LoxParser_binary(LoxParser *self)
-{
+void LoxParser_binary(LoxParser *self) {
   TokenType operator= self->previous.type;
   LoxParseRule *rule = LoxParser_getRule(operator);
   LoxParser_parsePrecedence(self, (LoxPrecedence)(rule->precedence + 1));
 
   LoxCompiler *compiler = self->masterCompiler;
 
-  switch (operator)
-  {
+  switch (operator) {
   case TOKEN_PLUS:
     _LoxCompiler_emitByte(compiler, OP_ADD);
     break;
@@ -213,37 +266,33 @@ void LoxParser_binary(LoxParser *self)
   }
 }
 
-void LoxParser_literal(LoxParser *self)
-{
-  switch (self->previous.type)
-  {
-    case TOKEN_TRUE:
-      _LoxCompiler_emitByte(self->masterCompiler, OP_TRUE);
-      break;
-    case TOKEN_FALSE:
-      _LoxCompiler_emitByte(self->masterCompiler, OP_FALSE);
-      break;
-    case TOKEN_NIL:
-      _LoxCompiler_emitByte(self->masterCompiler, OP_NIL);
-      break;
-    default: return;
+void LoxParser_literal(LoxParser *self) {
+  switch (self->previous.type) {
+  case TOKEN_TRUE:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_TRUE);
+    break;
+  case TOKEN_FALSE:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_FALSE);
+    break;
+  case TOKEN_NIL:
+    _LoxCompiler_emitByte(self->masterCompiler, OP_NIL);
+    break;
+  default:
+    return;
   }
 }
 
-void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedence)
-{
+void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedence) {
   LoxParser_advance(self, &self->masterCompiler->scanner);
   ParseFn prefixRule = LoxParser_getRule(self->previous.type)->prefix;
-  if (prefixRule == NULL)
-  {
+  if (prefixRule == NULL) {
     errorAtCurrent(self, "Expected expression");
     return;
   }
 
   prefixRule(self);
 
-  while (precedence <= LoxParser_getRule(self->current.type)->precedence)
-  {
+  while (precedence <= LoxParser_getRule(self->current.type)->precedence) {
     LoxParser_advance(self, &self->masterCompiler->scanner);
     ParseFn infixRule = LoxParser_getRule(self->previous.type)->infix;
     if (infixRule != NULL)
