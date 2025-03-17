@@ -1,1 +1,1 @@
-print "cow says: " + ("cup" + "cake");
+var a = "cow says meow";

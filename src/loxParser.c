@@ -143,7 +143,7 @@ void LoxParser_defineVariable(LoxParser *self, uint16_t name) {
 
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
                                  const char *errorMessage) {
-  LoxParser_consume(self, scanner, TOKEN_SEMICOLON, errorMessage);
+  LoxParser_consume(self, scanner, TOKEN_IDENTIFIER, errorMessage);
   LoxValue variableName = LoxToken_toString(self->previous);
   size_t variableNameIndex =
       _LoxCompiler_emitConstant(self->masterCompiler, variableName);
