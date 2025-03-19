@@ -8,6 +8,15 @@
 #include <loxParser.h>
 #include <loxScanner.h>
 #include <stdint.h>
+
+#define EMIT_LONG_FORK(compiler, OP, bytes)                                    \
+  if ((bytes < 256)) {                                                         \
+    _LoxCompiler_emitBytes(compiler, 2, OP, (uint8_t)bytes);                   \
+  } else {                                                                     \
+    uint8_Pair index = split_uint16(bytes);                                    \
+    _LoxCompiler_emitBytes(compiler, 3, OP##_LONG, index.first, index.second); \
+  }
+
 static LoxParseRule rules[] = {
     [TOKEN_LEFT_PAREN] = {LoxParser_grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
@@ -29,7 +38,7 @@ static LoxParseRule rules[] = {
     [TOKEN_GREATER_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
     [TOKEN_LESS] = {NULL, LoxParser_binary, PREC_EQUALITY},
     [TOKEN_LESS_EQUAL] = {NULL, LoxParser_binary, PREC_EQUALITY},
-    [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
+    [TOKEN_IDENTIFIER] = {LoxParser_variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {LoxParser_string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {LoxParser_number, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, NULL, PREC_NONE},
@@ -96,14 +105,14 @@ void LoxParser_statement(LoxParser *self, LoxScanner *scanner) {
 }
 
 void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner) {
-  LoxParser_expression(self);
+  LoxParser_expression(self, false);
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of the expression");
   _LoxCompiler_emitByte(self->masterCompiler, OP_POP);
 }
 
 void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner) {
-  LoxParser_expression(self);
+  LoxParser_expression(self, false);
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of statement");
   _LoxCompiler_emitByte(self->masterCompiler, OP_PRINT);
@@ -120,7 +129,7 @@ void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
   uint16_t name =
       LoxParser_parseVariable(self, scanner, "Expected variable name.");
   if (LoxParser_match(self, scanner, TOKEN_EQUAL)) {
-    LoxParser_expression(self);
+    LoxParser_expression(self, false);
   } else {
     _LoxCompiler_emitByte(self->masterCompiler, TOKEN_NIL);
   }
@@ -131,13 +140,19 @@ void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
 }
 
 void LoxParser_defineVariable(LoxParser *self, uint16_t name) {
-  if (name < 256) { // simple const
-    uint8_t index = (uint8_t)name;
-    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_DEFINE_GLOBAL, index);
-  } else { // long const
-    uint8_Pair index = split_uint16(name);
-    _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_DEFINE_GLOBAL_LONG,
-                           index.first, index.second);
+  EMIT_LONG_FORK(self->masterCompiler, OP_DEFINE_GLOBAL, name);
+}
+
+void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign) {
+  LoxValue variableName = LoxToken_toString(self->previous);
+  uint16_t variableNameIndex =
+      LoxCompiler_makeConstant(self->masterCompiler, variableName);
+  if (canAssign &&
+      LoxParser_match(self, &self->masterCompiler->scanner, TOKEN_EQUAL)) {
+    LoxParser_expression(self, canAssign);
+    EMIT_LONG_FORK(self->masterCompiler, OP_SET_GLOBAL, variableNameIndex);
+  } else {
+    EMIT_LONG_FORK(self->masterCompiler, OP_GET_GLOBAL, variableNameIndex);
   }
 }
 
@@ -145,8 +160,8 @@ uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
                                  const char *errorMessage) {
   LoxParser_consume(self, scanner, TOKEN_IDENTIFIER, errorMessage);
   LoxValue variableName = LoxToken_toString(self->previous);
-  size_t variableNameIndex =
-      _LoxCompiler_emitConstant(self->masterCompiler, variableName);
+  uint16_t variableNameIndex =
+      LoxCompiler_makeConstant(self->masterCompiler, variableName);
   return variableNameIndex;
 }
 
@@ -181,28 +196,28 @@ void LoxParser_syncronize(LoxParser *self, LoxScanner *scanner) {
   }
 }
 
-void LoxParser_expression(LoxParser *self) {
+void LoxParser_expression(LoxParser *self, bool canAssign) {
   LoxParser_parsePrecedence(self, PREC_ASSIGNMENT);
 }
 
-void LoxParser_string(LoxParser *self) {
+void LoxParser_string(LoxParser *self, bool canAssign) {
   _LoxCompiler_emitConstant(
       self->masterCompiler,
       LOX_OBJECT_VAL( // for " at start      and for " at the end
           copyString(&vm, self->previous.start + 1, self->previous.size - 2)));
 }
 
-void LoxParser_number(LoxParser *self) {
+void LoxParser_number(LoxParser *self, bool canAssign) {
   double value = strtod(self->previous.start, NULL);
   _LoxCompiler_emitConstant(self->masterCompiler, LOX_NUMBER_VAL(value));
 }
 
-void LoxParser_grouping(LoxParser *self) {
-  LoxParser_expression(self);
+void LoxParser_grouping(LoxParser *self, bool canAssign) {
+  LoxParser_expression(self, canAssign);
   LoxParser_consume(self, &self->masterCompiler->scanner, TOKEN_RIGHT_PAREN,
                     "Expect ')' after expression");
 }
-void LoxParser_unary(LoxParser *self) {
+void LoxParser_unary(LoxParser *self, bool canAssign) {
   TokenType operator= self->previous.type;
 
   LoxParseRule *rule = LoxParser_getRule(operator);
@@ -225,7 +240,11 @@ inline static LoxParseRule *LoxParser_getRule(TokenType type) {
   return &rules[type];
 }
 
-void LoxParser_binary(LoxParser *self) {
+void LoxParser_variable(LoxParser *self, bool canAssign) {
+  LoxParser_namedVariable(self, self->previous, canAssign);
+}
+
+void LoxParser_binary(LoxParser *self, bool canAssign) {
   TokenType operator= self->previous.type;
   LoxParseRule *rule = LoxParser_getRule(operator);
   LoxParser_parsePrecedence(self, (LoxPrecedence)(rule->precedence + 1));
@@ -266,7 +285,7 @@ void LoxParser_binary(LoxParser *self) {
   }
 }
 
-void LoxParser_literal(LoxParser *self) {
+void LoxParser_literal(LoxParser *self, bool canAssign) {
   switch (self->previous.type) {
   case TOKEN_TRUE:
     _LoxCompiler_emitByte(self->masterCompiler, OP_TRUE);
@@ -289,13 +308,13 @@ void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedence) {
     errorAtCurrent(self, "Expected expression");
     return;
   }
-
-  prefixRule(self);
+  bool canAssign = precedence <= PREC_ASSIGNMENT;
+  prefixRule(self, canAssign);
 
   while (precedence <= LoxParser_getRule(self->current.type)->precedence) {
     LoxParser_advance(self, &self->masterCompiler->scanner);
     ParseFn infixRule = LoxParser_getRule(self->previous.type)->infix;
     if (infixRule != NULL)
-      infixRule(self);
+      infixRule(self, canAssign);
   }
 }

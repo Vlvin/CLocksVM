@@ -69,9 +69,17 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
     break;
     CASE_CONST(OP_DEFINE_GLOBAL)
     break;
+    CASE_CONST(OP_GET_GLOBAL)
+    break;
+    CASE_CONST(OP_SET_GLOBAL)
+    break;
     CASE_CONST_LONG(OP_CONSTANT_LONG)
     break;
     CASE_CONST_LONG(OP_DEFINE_GLOBAL_LONG)
+    break;
+    CASE_CONST_LONG(OP_GET_GLOBAL_LONG)
+    break;
+    CASE_CONST_LONG(OP_SET_GLOBAL_LONG)
     break;
   }
 

@@ -182,6 +182,46 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
       LoxStack_pop(&vm.stack);
       break;
     }
+    case OP_GET_GLOBAL: {
+      LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
+      LoxValue value;
+      if (!LoxHashMap_get(&vm.globals, name, &value)) { // does not exist
+        runtimeError(&vm, "Undefined variable %s\n", AS_LOX_CSTRING(value));
+        return LOX_INTERPRET_RUNTIME_ERROR;
+      }
+      LoxStack_push(stack, value);
+      break;
+    }
+    case OP_GET_GLOBAL_LONG: {
+      LoxString *name = AS_LOX_STRING(READ_CONST_LONG(&vm));
+      LoxValue value;
+      if (!LoxHashMap_get(&vm.globals, name, &value)) { // does not exist
+        runtimeError(&vm, "Undefined variable %s\n", AS_LOX_CSTRING(value));
+        return LOX_INTERPRET_RUNTIME_ERROR;
+      }
+      LoxStack_push(stack, value);
+      break;
+    }
+    case OP_SET_GLOBAL: {
+      LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
+      if (!LoxHashMap_set(&vm.globals, name,
+                          LoxStack_peek(stack, 0))) { // does not exist
+        LoxHashMap_delete(&vm.globals, name);
+        runtimeError(&vm, "Undefined variable %s\n", name->bytes);
+        return LOX_INTERPRET_RUNTIME_ERROR;
+      }
+      break;
+    }
+    case OP_SET_GLOBAL_LONG: {
+      LoxString *name = AS_LOX_STRING(READ_CONST_LONG(&vm));
+      if (!LoxHashMap_set(&vm.globals, name,
+                          LoxStack_peek(stack, 0))) { // does not exist
+        LoxHashMap_delete(&vm.globals, name);
+        runtimeError(&vm, "Undefined variable %s\n", name->bytes);
+        return LOX_INTERPRET_RUNTIME_ERROR;
+      }
+      break;
+    }
     case OP_RETURN:
       return LOX_INTERPRET_OK;
     }

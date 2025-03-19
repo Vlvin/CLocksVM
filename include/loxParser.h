@@ -26,7 +26,7 @@ typedef enum {
   PREC_PRIMARY
 } LoxPrecedence;
 
-typedef void (*ParseFn)(LoxParser *);
+typedef void (*ParseFn)(LoxParser *self, bool canAssign);
 
 typedef struct LoxParseRule {
   ParseFn prefix;
@@ -49,17 +49,19 @@ inline static LoxParseRule *LoxParser_getRule(TokenType type);
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
                                  const char *errorMessage);
 void LoxParser_defineVariable(LoxParser *self, uint16_t name);
+void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign);
 void LoxParser_syncronize(LoxParser *self, LoxScanner *scanner);
 void LoxParser_declaration(LoxParser *self, LoxScanner *scanner);
 void LoxParser_statement(LoxParser *self, LoxScanner *scanner);
 // expressions
-void LoxParser_expression(LoxParser *self);
-void LoxParser_string(LoxParser *self);
-void LoxParser_number(LoxParser *self);
-void LoxParser_grouping(LoxParser *self);
-void LoxParser_unary(LoxParser *self);
-void LoxParser_binary(LoxParser *self);
-void LoxParser_literal(LoxParser *self);
+void LoxParser_expression(LoxParser *self, bool canAssign);
+void LoxParser_string(LoxParser *self, bool canAssign);
+void LoxParser_number(LoxParser *self, bool canAssign);
+void LoxParser_grouping(LoxParser *self, bool canAssign);
+void LoxParser_unary(LoxParser *self, bool canAssign);
+void LoxParser_binary(LoxParser *self, bool canAssign);
+void LoxParser_literal(LoxParser *self, bool canAssign);
+void LoxParser_variable(LoxParser *self, bool canAssign);
 void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedance);
 // statements
 void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner);

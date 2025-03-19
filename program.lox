@@ -1,1 +1,4 @@
 var a = "cow says meow";
+var someth = "a  " + a;
+a = "Helele";
+print a;
