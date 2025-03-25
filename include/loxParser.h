@@ -46,9 +46,11 @@ bool LoxParser_check(LoxParser *self, TokenType type);
 bool LoxParser_match(LoxParser *self, LoxScanner *scanner, TokenType type);
 inline static LoxParseRule *LoxParser_getRule(TokenType type);
 
-uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
-                                 const char *errorMessage);
+uint16_t LoxParser_parseVariable(LoxParser *self, LoxCompiler *compiler,
+                                 LoxScanner *scanner, const char *errorMessage);
 void LoxParser_defineVariable(LoxParser *self, uint16_t name);
+void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
+                               LoxScanner *scanner);
 void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign);
 void LoxParser_syncronize(LoxParser *self, LoxScanner *scanner);
 void LoxParser_declaration(LoxParser *self, LoxScanner *scanner);
@@ -65,6 +67,7 @@ void LoxParser_variable(LoxParser *self, bool canAssign);
 void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedance);
 // statements
 void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner);
+void LoxParser_blockStatement(LoxParser *self, LoxScanner *scanner);
 void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner);
 void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner);
 #endif

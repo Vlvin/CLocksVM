@@ -72,5 +72,5 @@ LoxToken LoxToken_create(TokenType type, size_t line, const char *start,
                          size_t size);
 
 LoxValue LoxToken_toString(LoxToken self);
-
+bool LoxToken_identifierEquals(LoxToken *left, LoxToken *right);
 #endif

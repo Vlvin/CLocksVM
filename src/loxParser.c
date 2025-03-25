@@ -97,7 +97,11 @@ void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type,
 }
 
 void LoxParser_statement(LoxParser *self, LoxScanner *scanner) {
-  if (LoxParser_match(self, scanner, TOKEN_PRINT)) {
+  if (LoxParser_match(self, scanner, TOKEN_LEFT_BRACE)) {
+    LoxCompiler_beginScope(self->masterCompiler);
+    LoxParser_blockStatement(self, scanner);
+    LoxCompiler_endScope(self->masterCompiler);
+  } else if (LoxParser_match(self, scanner, TOKEN_PRINT)) {
     LoxParser_printStatement(self, scanner);
   } else {
     LoxParser_expressionStatement(self, scanner);
@@ -109,6 +113,15 @@ void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner) {
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of the expression");
   _LoxCompiler_emitByte(self->masterCompiler, OP_POP);
+}
+
+void LoxParser_blockStatement(LoxParser *self, LoxScanner *scanner) {
+  while (!LoxParser_check(self, TOKEN_RIGHT_BRACE) &&
+         !LoxParser_check(self, TOKEN_EOF)) {
+    LoxParser_declaration(self, scanner);
+  }
+  LoxParser_consume(self, scanner, TOKEN_RIGHT_BRACE,
+                    "Expected '}' after block");
 }
 
 void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner) {
@@ -126,8 +139,8 @@ bool LoxParser_match(LoxParser *self, LoxScanner *scanner, TokenType type) {
 }
 
 void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
-  uint16_t name =
-      LoxParser_parseVariable(self, scanner, "Expected variable name.");
+  uint16_t name = LoxParser_parseVariable(self, self->masterCompiler, scanner,
+                                          "Expected variable name.");
   if (LoxParser_match(self, scanner, TOKEN_EQUAL)) {
     LoxParser_expression(self, false);
   } else {
@@ -139,29 +152,70 @@ void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
   LoxParser_defineVariable(self, name);
 }
 
+void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
+                               LoxScanner *scanner) {
+  if (compiler->scopeDepth == 0)
+    return;
+
+  LoxToken *name = &self->previous;
+  for (int i = compiler->localCount - 1; i >= 0; i--) {
+    LoxLocal *local = &compiler->locals[i];
+    if (local->depth != -1 && local->depth < compiler->scopeDepth) {
+      break;
+    }
+    if (LoxToken_identifierEquals(name, &local->name)) {
+      errorAt(self, &self->previous, "Already defined in this scope");
+    }
+  }
+  LoxCompiler_addLocal(compiler, *name);
+}
 void LoxParser_defineVariable(LoxParser *self, uint16_t name) {
+  if (self->masterCompiler->scopeDepth > 0)
+    return;
   EMIT_LONG_FORK(self->masterCompiler, OP_DEFINE_GLOBAL, name);
 }
 
 void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign) {
   LoxValue variableName = LoxToken_toString(self->previous);
-  uint16_t variableNameIndex =
-      LoxCompiler_makeConstant(self->masterCompiler, variableName);
+
+  enum { LOCAL, GLOBAL } setOp, getOp;
+  int arg = LoxCompiler_resolveLocal(self->masterCompiler, &name);
+  if (arg != -1) {
+    getOp = LOCAL;
+    setOp = LOCAL;
+  } else {
+    arg = LoxCompiler_makeConstant(self->masterCompiler, variableName);
+    getOp = GLOBAL;
+    setOp = GLOBAL;
+  }
   if (canAssign &&
       LoxParser_match(self, &self->masterCompiler->scanner, TOKEN_EQUAL)) {
     LoxParser_expression(self, canAssign);
-    EMIT_LONG_FORK(self->masterCompiler, OP_SET_GLOBAL, variableNameIndex);
+    if (setOp == LOCAL) {
+      _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_SET_LOCAL,
+                             (uint8_t)arg);
+    } else {
+      EMIT_LONG_FORK(self->masterCompiler, OP_SET_GLOBAL, arg);
+    }
   } else {
-    EMIT_LONG_FORK(self->masterCompiler, OP_GET_GLOBAL, variableNameIndex);
+    if (getOp == LOCAL) {
+      _LoxCompiler_emitBytes(self->masterCompiler, 2, OP_GET_LOCAL,
+                             (uint8_t)arg);
+    } else {
+      EMIT_LONG_FORK(self->masterCompiler, OP_GET_GLOBAL, arg);
+    }
   }
 }
 
-uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
+uint16_t LoxParser_parseVariable(LoxParser *self, LoxCompiler *compiler,
+                                 LoxScanner *scanner,
                                  const char *errorMessage) {
   LoxParser_consume(self, scanner, TOKEN_IDENTIFIER, errorMessage);
+  LoxParser_declareVariable(self, self->masterCompiler, scanner);
+  if (compiler->scopeDepth > 0)
+    return 0;
   LoxValue variableName = LoxToken_toString(self->previous);
-  uint16_t variableNameIndex =
-      LoxCompiler_makeConstant(self->masterCompiler, variableName);
+  uint16_t variableNameIndex = LoxCompiler_makeConstant(compiler, variableName);
   return variableNameIndex;
 }
 

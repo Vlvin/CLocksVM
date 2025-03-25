@@ -1,3 +1,4 @@
+#include "loxErrors.h"
 #include "loxParser.h"
 #include "loxScanner.h"
 #include <bitsTricks.h>
@@ -11,6 +12,8 @@
 
 void LoxCompiler_init(LoxCompiler *self) {
   LoxParser_init(&self->parser, self);
+  self->localCount = 0;
+  self->scopeDepth = 0;
 }
 
 bool LoxCompiler_compile(LoxCompiler *self, const char *source, Chunk *chunk) {
@@ -43,6 +46,36 @@ void LoxCompiler_end(LoxCompiler *self) {
 void LoxCompiler_free(LoxCompiler *self) {
   LoxParser_free(&self->parser);
   (*self) = (LoxCompiler){0};
+}
+
+void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name) {
+  if (self->localCount == UINT8_COUNT) {
+    errorAt(&self->parser, &self->parser.previous,
+            "Too many locals in function");
+    return;
+  }
+  LoxLocal *local = &self->locals[self->localCount++];
+  local->name = name;
+  local->depth = self->scopeDepth;
+}
+
+int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name) {
+  for (int i = self->localCount - 1; i >= 0; i--) {
+    LoxLocal *local = &self->locals[i];
+    if (LoxToken_identifierEquals(name, &local->name))
+      return i;
+  }
+  return -1;
+}
+void LoxCompiler_beginScope(LoxCompiler *self) { self->scopeDepth++; }
+
+void LoxCompiler_endScope(LoxCompiler *self) {
+  self->scopeDepth--;
+  while (self->localCount >= 0 &&
+         self->locals[self->localCount - 1].depth > self->scopeDepth) {
+    _LoxCompiler_emitByte(self, OP_POP);
+    self->localCount--;
+  }
 }
 
 uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value) {

@@ -1,4 +1,9 @@
-var a = "cow says meow";
-var someth = "a  " + a;
-a = "Helele";
-print a;
+var x = 1;
+{
+		var a = 2;
+		print(a);
+		{
+				var b = a;
+		print(a);
+		}
+}

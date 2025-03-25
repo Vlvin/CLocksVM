@@ -202,6 +202,11 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
       LoxStack_push(stack, value);
       break;
     }
+    case OP_GET_LOCAL: {
+      uint8_t slot = READ_BYTE(&vm);
+      LoxStack_push(stack, vm.stack.data[slot]);
+      break;
+    }
     case OP_SET_GLOBAL: {
       LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
       if (!LoxHashMap_set(&vm.globals, name,
@@ -220,6 +225,11 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
         runtimeError(&vm, "Undefined variable %s\n", name->bytes);
         return LOX_INTERPRET_RUNTIME_ERROR;
       }
+      break;
+    }
+    case OP_SET_LOCAL: {
+      uint8_t slot = READ_BYTE(&vm);
+      vm.stack.data[slot] = LoxStack_peek(stack, 0);
       break;
     }
     case OP_RETURN:

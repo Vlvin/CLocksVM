@@ -13,3 +13,7 @@ LoxToken LoxToken_create(TokenType type, size_t line, const char *start,
 LoxValue LoxToken_toString(LoxToken self) {
   return LOX_OBJECT_VAL(copyString(&vm, self.start, self.size));
 }
+bool LoxToken_identifierEquals(LoxToken *left, LoxToken *right) {
+  return (left->size == right->size &&
+          memcmp(left->start, right->start, left->size) == 0);
+}

@@ -2,6 +2,7 @@
 #include <debug.h>
 #include <loxChunk.h>
 #include <loxValueArray.h>
+#include <stdint.h>
 
 int disassembleChunk(Chunk *chunk, const char *name) {
   printf("== %s ==\n", name);
@@ -24,12 +25,19 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
 #define CASE_SIMPLE(INSTRUCTION)                                               \
   case INSTRUCTION:                                                            \
     return simpleInstruction(#INSTRUCTION, offset);
+
+#define CASE_BYTE(INSTRUCTION)                                                 \
+  case INSTRUCTION:                                                            \
+    return byteInstruction(#INSTRUCTION, chunk, offset);
+
 #define CASE_CONST(INSTRUCTION)                                                \
   case INSTRUCTION:                                                            \
     return constantInstruction(#INSTRUCTION, chunk, offset);
+
 #define CASE_CONST_LONG(INSTRUCTION)                                           \
   case INSTRUCTION:                                                            \
     return constantLongInstruction(#INSTRUCTION, chunk, offset);
+
   switch (instruction) {
     CASE_SIMPLE(OP_RETURN)
     break;
@@ -73,6 +81,10 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
     break;
     CASE_CONST(OP_SET_GLOBAL)
     break;
+    CASE_BYTE(OP_GET_LOCAL)
+    break;
+    CASE_BYTE(OP_SET_LOCAL)
+    break;
     CASE_CONST_LONG(OP_CONSTANT_LONG)
     break;
     CASE_CONST_LONG(OP_DEFINE_GLOBAL_LONG)
@@ -84,6 +96,9 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
   }
 
 #undef CASE_SIMPLE
+#undef CASE_BYTE
+#undef CASE_CONST
+#undef CASE_CONST_LONG
   printf("Unknown instruction at %4lu\n", offset);
   return offset + 1;
 }
@@ -91,6 +106,12 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
 int simpleInstruction(const char *instruction, size_t offset) {
   printf("%s\n", instruction);
   return offset + 1;
+}
+
+int byteInstruction(const char *instruction, Chunk *chunk, size_t offset) {
+  uint8_t slot = chunk->code[offset + 1];
+  printf("%-16s %4d\n", instruction, slot);
+  return offset + 2;
 }
 
 int constantInstruction(const char *instruction, Chunk *chunk, size_t offset) {
