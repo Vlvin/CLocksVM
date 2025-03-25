@@ -33,6 +33,7 @@ uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value);
 void LoxCompiler_beginScope(LoxCompiler *self);
 void LoxCompiler_endScope(LoxCompiler *self);
 void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name);
+void LoxCompiler_markInitialized(LoxCompiler *self);
 int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name);
 // private:
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte);

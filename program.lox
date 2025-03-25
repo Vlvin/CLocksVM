@@ -1,9 +1,6 @@
-var x = 1;
 {
-		var a = 2;
-		print(a);
 		{
-				var b = a;
+				var a = a;
 		print(a);
 		}
 }

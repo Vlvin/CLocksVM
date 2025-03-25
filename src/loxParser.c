@@ -149,7 +149,7 @@ void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner) {
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' after variable declaration");
 
-  LoxParser_defineVariable(self, name);
+  LoxParser_defineVariable(self, self->masterCompiler, name);
 }
 
 void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
@@ -169,9 +169,12 @@ void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
   }
   LoxCompiler_addLocal(compiler, *name);
 }
-void LoxParser_defineVariable(LoxParser *self, uint16_t name) {
-  if (self->masterCompiler->scopeDepth > 0)
+void LoxParser_defineVariable(LoxParser *self, LoxCompiler *compiler,
+                              uint16_t name) {
+  if (compiler->scopeDepth > 0) {
+    LoxCompiler_markInitialized(self->masterCompiler);
     return;
+  }
   EMIT_LONG_FORK(self->masterCompiler, OP_DEFINE_GLOBAL, name);
 }
 

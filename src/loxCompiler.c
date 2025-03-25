@@ -56,15 +56,27 @@ void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name) {
   }
   LoxLocal *local = &self->locals[self->localCount++];
   local->name = name;
-  local->depth = self->scopeDepth;
+  local->depth = -1;
+}
+
+void LoxCompiler_markInitialized(LoxCompiler *self) {
+  self->locals[self->localCount - 1].depth = self->scopeDepth;
 }
 
 int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name) {
+  bool met_uninitialized_self = false;
   for (int i = self->localCount - 1; i >= 0; i--) {
     LoxLocal *local = &self->locals[i];
     if (LoxToken_identifierEquals(name, &local->name))
-      return i;
+      if (local->depth == -1) {
+        met_uninitialized_self = true;
+        continue;
+      }
+    return i;
   }
+  if (met_uninitialized_self)
+    errorAt(&self->parser, &self->parser.previous,
+            "Can't read variable in it's own initializer");
   return -1;
 }
 void LoxCompiler_beginScope(LoxCompiler *self) { self->scopeDepth++; }

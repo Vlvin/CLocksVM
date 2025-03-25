@@ -48,7 +48,8 @@ inline static LoxParseRule *LoxParser_getRule(TokenType type);
 
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxCompiler *compiler,
                                  LoxScanner *scanner, const char *errorMessage);
-void LoxParser_defineVariable(LoxParser *self, uint16_t name);
+void LoxParser_defineVariable(LoxParser *self, LoxCompiler *compiler,
+                              uint16_t name);
 void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
                                LoxScanner *scanner);
 void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign);
