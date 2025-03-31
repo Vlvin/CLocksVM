@@ -38,6 +38,10 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
   case INSTRUCTION:                                                            \
     return constantLongInstruction(#INSTRUCTION, chunk, offset);
 
+#define CASE_JMP(INSTRUCTION, SIGN)                                            \
+  case INSTRUCTION:                                                            \
+    return jumpInstruction(#INSTRUCTION, SIGN, chunk, offset);
+
   switch (instruction) {
     CASE_SIMPLE(OP_RETURN)
     break;
@@ -93,6 +97,10 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
     break;
     CASE_CONST_LONG(OP_SET_GLOBAL_LONG)
     break;
+    CASE_JMP(OP_JUMP_IF_FALSE, 1)
+    break;
+    CASE_JMP(OP_JUMP, 1)
+    break;
   }
 
 #undef CASE_SIMPLE
@@ -133,5 +141,13 @@ int constantLongInstruction(const char *instruction, Chunk *chunk,
   printValue(constant);
   printf("'\n");
 
+  return offset + 3;
+}
+
+int jumpInstruction(const char *instruction, int sign, Chunk *chunk,
+                    size_t offset) {
+  uint16_t jump = forge_uint16(
+      (uint8_Pair){chunk->code[offset + 1], chunk->code[offset + 2]});
+  printf("%-16s %4zu -> %zu\n", instruction, offset, offset + 3 + sign * jump);
   return offset + 3;
 }

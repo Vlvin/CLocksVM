@@ -8,6 +8,9 @@
 #include <stdint.h>
 
 typedef enum {
+  // JMP
+  OP_JUMP,
+  OP_JUMP_IF_FALSE,
   // STACK VALUES
   OP_CONSTANT,
   OP_CONSTANT_LONG,

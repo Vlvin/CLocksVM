@@ -94,8 +94,21 @@ uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value) {
   return Chunk_addConstant(self->compilingChunk, value);
 }
 
+void LoxCompiler_patchJump(LoxCompiler *self, int offset) {
+  int jump = self->compilingChunk->size - offset - 2;
+  if (jump > UINT16_MAX) {
+    errorAt(&self->parser, &self->parser.previous, "Too much to jump");
+  }
+  *(uint16_t *)(&self->compilingChunk->code[offset]) = jump;
+}
+
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte) {
   Chunk_add(LoxCompiler_currentChunk(self), byte, self->parser.previous.line);
+}
+
+int LoxCompiler_emitJump(LoxCompiler *self, uint8_t instruction) {
+  _LoxCompiler_emitBytes(self, 3, instruction, 0xff, 0xff);
+  return self->compilingChunk->size - 2;
 }
 
 void _LoxCompiler_emitBytes(LoxCompiler *self, int count, ...) {

@@ -1,6 +1,3 @@
-{
-		{
-				var a = a;
-		print(a);
-		}
+if true {
+	print("true");
 }

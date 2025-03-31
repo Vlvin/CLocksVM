@@ -11,5 +11,7 @@ int simpleInstruction(const char *instruction, size_t offset);
 int constantInstruction(const char *instruction, Chunk *chunk, size_t offset);
 int constantLongInstruction(const char *instruction, Chunk *chunk,
                             size_t offset);
+int jumpInstruction(const char *instruction, int sign, Chunk *chunk,
+                    size_t offset);
 
 #endif

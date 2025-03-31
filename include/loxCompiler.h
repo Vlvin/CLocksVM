@@ -36,9 +36,11 @@ void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name);
 void LoxCompiler_markInitialized(LoxCompiler *self);
 int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name);
 // private:
-void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte);
+void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t instruction);
+int LoxCompiler_emitJump(LoxCompiler *self, uint8_t instruction);
 void _LoxCompiler_emitBytes(LoxCompiler *self, int count, ...);
 void _LoxCompiler_emitReturn(LoxCompiler *self);
 uint16_t _LoxCompiler_emitConstant(LoxCompiler *self, LoxValue value);
+void LoxCompiler_patchJump(LoxCompiler *self, int offset);
 
 #endif

@@ -44,6 +44,8 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
   LoxStack *stack = &self->stack;
 
 #define READ_BYTE(vm) (*(vm)->instruction++)
+#define READ_SHORT(vm)                                                         \
+  (forge_uint16((uint8_Pair){*(vm)->instruction++, *(vm)->instruction++}))
 #define READ_CONST(vm) Chunk_getConstant((vm)->chunk, READ_BYTE((vm)))
 #define READ_CONST_LONG(vm)                                                    \
   Chunk_getConstant((vm)->chunk, forge_uint16((uint8_Pair){READ_BYTE((vm)),    \
@@ -232,6 +234,18 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
       vm.stack.data[slot] = LoxStack_peek(stack, 0);
       break;
     }
+    case OP_JUMP_IF_FALSE: {
+      uint16_t offset = READ_SHORT(&vm);
+      // branchless :))
+      vm.instruction += offset * LoxValue_isFalse(LoxStack_peek(stack, 0));
+      break;
+    }
+    case OP_JUMP: {
+      uint16_t offset = READ_SHORT(&vm);
+      // branchless :))
+      vm.instruction += offset;
+      break;
+    }
     case OP_RETURN:
       return LOX_INTERPRET_OK;
     }
@@ -239,6 +253,7 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
   return LOX_INTERPRET_RUNTIME_ERROR;
 
 #undef READ_BYTE
+#undef READ_SHORT
 #undef READ_CONST
 #undef READ_CONST_LONG
 #undef UNARY_OP
