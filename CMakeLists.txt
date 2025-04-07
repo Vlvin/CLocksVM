@@ -15,10 +15,10 @@ endif("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 set(SRC ${PROJECT_SOURCE_DIR}/src)
 
 set(INCLUDE_DIRS
-    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
 )
 
-set(SOURCES 
+set(SOURCES
     ${SRC}/bitsTricks.c
     ${SRC}/debug.c
     ${SRC}/loxChunk.c
@@ -50,6 +50,6 @@ add_test(NAME hash-bench COMMAND hash-bench)
 # Enable testing
 enable_testing()
 
-add_executable(${PROJECT_NAME} ${SRC}/main.c ${SOURCES})
+add_executable(${PROJECT_NAME} ${SRC}/main.c)
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} "${PROJECT_NAME}_SRC")

@@ -11,6 +11,7 @@ typedef enum {
   // JMP
   OP_JUMP,
   OP_JUMP_IF_FALSE,
+  OP_LOOP,
   // STACK VALUES
   OP_CONSTANT,
   OP_CONSTANT_LONG,

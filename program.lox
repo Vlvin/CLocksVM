@@ -1,3 +1,12 @@
-if true {
-	print("true");
+var a = 3;
+
+while (a > 0) {
+    print(a);
+    a = a - 1;
+}
+print("i\n");
+var i = 0; 
+while ( i < 5 ) {
+    print(i);
+    i = i + 1;
 }

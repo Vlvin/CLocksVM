@@ -99,11 +99,24 @@ void LoxCompiler_patchJump(LoxCompiler *self, int offset) {
   if (jump > UINT16_MAX) {
     errorAt(&self->parser, &self->parser.previous, "Too much to jump");
   }
-  *(uint16_t *)(&self->compilingChunk->code[offset]) = jump;
+  uint8_Pair jumpPair = split_uint16(jump);
+  *(&self->compilingChunk->code[offset]) = jumpPair.first;
+  *(&self->compilingChunk->code[offset + 1]) = jumpPair.second;
 }
 
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte) {
   Chunk_add(LoxCompiler_currentChunk(self), byte, self->parser.previous.line);
+}
+
+int LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
+
+  _LoxCompiler_emitByte(self, OP_LOOP);
+  int offset = self->compilingChunk->size - loopStart + 2;
+  if (offset > UINT16_MAX) {
+    errorAt(&self->parser, &self->parser.previous, "Too big loop size");
+  }
+  uint8_Pair index = split_uint16(offset);
+  _LoxCompiler_emitBytes(self, 2, index.first, index.second);
 }
 
 int LoxCompiler_emitJump(LoxCompiler *self, uint8_t instruction) {

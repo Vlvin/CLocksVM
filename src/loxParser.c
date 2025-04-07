@@ -41,7 +41,7 @@ static LoxParseRule rules[] = {
     [TOKEN_IDENTIFIER] = {LoxParser_variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {LoxParser_string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {LoxParser_number, NULL, PREC_NONE},
-    [TOKEN_AND] = {NULL, LoxParser_and, PREC_NONE},
+    [TOKEN_AND] = {NULL, LoxParser_and, PREC_AND},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
@@ -50,7 +50,7 @@ static LoxParseRule rules[] = {
     [TOKEN_FALSE] = {LoxParser_literal, NULL, PREC_NONE},
     [TOKEN_TRUE] = {LoxParser_literal, NULL, PREC_NONE},
     [TOKEN_NIL] = {LoxParser_literal, NULL, PREC_NONE},
-    [TOKEN_OR] = {NULL, LoxParser_or, PREC_NONE},
+    [TOKEN_OR] = {NULL, LoxParser_or, PREC_OR},
     [TOKEN_CONST] = {NULL, NULL, PREC_NONE},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
@@ -137,16 +137,35 @@ void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner) {
 
 void LoxParser_whileStatement(LoxParser *self, LoxScanner *scanner,
                               LoxCompiler *compiler) {
+  int loopStart = compiler->compilingChunk->size;
+  // while
   // condition
   LoxParser_expression(self);
+
+  int exitJump = LoxCompiler_emitJump(compiler, OP_JUMP_IF_FALSE);
+  _LoxCompiler_emitByte(compiler, OP_POP);
+
+  // { statements }
+  LoxParser_consume(self, scanner, TOKEN_LEFT_BRACE,
+                    "Expected '{' before if block");
+  LoxParser_blockStatement(self, scanner);
+
+  LoxCompiler_emitLoop(compiler, loopStart);
+  LoxCompiler_patchJump(compiler, exitJump);
+  _LoxCompiler_emitByte(compiler, OP_POP);
 }
 
 void LoxParser_ifStatement(LoxParser *self, LoxScanner *scanner,
                            LoxCompiler *compiler) {
+
+  // if
+  // statement
   LoxParser_expression(self);
 
   int thenJump = LoxCompiler_emitJump(compiler, OP_JUMP_IF_FALSE);
   _LoxCompiler_emitByte(compiler, OP_POP);
+
+  // { then statements }
   LoxParser_consume(self, scanner, TOKEN_LEFT_BRACE,
                     "Expected '{' before if block");
   LoxParser_blockStatement(self, scanner);
@@ -154,8 +173,8 @@ void LoxParser_ifStatement(LoxParser *self, LoxScanner *scanner,
   int elseJump = LoxCompiler_emitJump(compiler, OP_JUMP);
   LoxCompiler_patchJump(compiler, thenJump);
   _LoxCompiler_emitByte(compiler, OP_POP);
-
   if (LoxParser_match(self, scanner, TOKEN_ELSE)) {
+    // { else statement }
     LoxParser_consume(self, scanner, TOKEN_LEFT_BRACE,
                       "Expected '{' before else block");
     LoxParser_blockStatement(self, scanner);
@@ -344,8 +363,10 @@ void LoxParser_or(LoxParser *self, bool canAssign) {
 void LoxParser_and(LoxParser *self, bool canAssign) {
   LoxCompiler *compiler = self->masterCompiler;
   int shortPath = LoxCompiler_emitJump(compiler, OP_JUMP_IF_FALSE);
+
   _LoxCompiler_emitByte(compiler, OP_POP);
   LoxParser_parsePrecedence(self, PREC_AND);
+
   LoxCompiler_patchJump(compiler, shortPath);
 }
 

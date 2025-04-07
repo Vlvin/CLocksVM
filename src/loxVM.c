@@ -236,6 +236,7 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
     }
     case OP_JUMP_IF_FALSE: {
       uint16_t offset = READ_SHORT(&vm);
+
       // branchless :))
       vm.instruction += offset * LoxValue_isFalse(LoxStack_peek(stack, 0));
       break;
@@ -244,6 +245,12 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
       uint16_t offset = READ_SHORT(&vm);
       // branchless :))
       vm.instruction += offset;
+      break;
+    }
+    case OP_LOOP: {
+      uint16_t offset = READ_SHORT(&vm);
+      // branchless :))
+      vm.instruction -= offset;
       break;
     }
     case OP_RETURN:

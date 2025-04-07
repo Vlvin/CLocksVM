@@ -101,6 +101,8 @@ int disassembleInstruction(Chunk *chunk, size_t offset, const char *name) {
     break;
     CASE_JMP(OP_JUMP, 1)
     break;
+    CASE_JMP(OP_LOOP, 0)
+    break;
   }
 
 #undef CASE_SIMPLE
