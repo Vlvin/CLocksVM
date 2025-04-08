@@ -1,10 +1,10 @@
 #ifndef LOX_CLI_H
 #define LOX_CLI_H
 
-typedef enum LoxResult LoxResult;
+#include <loxVM.h>
 
-LoxResult lox_Repl();
-LoxResult lox_runFile(const char* filename);
-char* readFile(const char* filename);
+void lox_Repl();
+LoxResult lox_runFile(const char *filename);
+char *readFile(const char *filename);
 
 #endif
