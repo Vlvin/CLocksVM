@@ -299,7 +299,7 @@ int build_tests(Nob_Cmd *cmd) {
     strcat(filepath_noext, children.items[i]);
     filepath_noext[strlen(filepath_noext) - 2] = '\0';
     nob_log(NOB_INFO, "Discovered test %s", filepath);
-    nob_cmd_append(cmd, "cc", filepath, "-L" SRC_LIB_FOLDER "debug/",
+    nob_cmd_append(cmd, "cc", filepath, "-L" SRC_LIB_FOLDER "release/",
                    "-l" PROJECT_NAME, CFLAGS, RELEASE_FLAGS, "-o",
                    filepath_noext);
     if (!nob_cmd_run_sync_and_reset(cmd)) {

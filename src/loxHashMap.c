@@ -53,8 +53,7 @@ bool LoxHashMap_get(LoxHashMap *self, LoxString *key, LoxValue *value) {
 // @return false if key is new
 bool LoxHashMap_set(LoxHashMap *self, LoxString *key, LoxValue val) {
   if (self->size + 1 > self->capacity * TABLE_MAX_LOAD) {
-    int capacity = GROW_CAPACITY(capacity);
-    LoxHashMap_adjust(self, capacity);
+    LoxHashMap_adjust(self, GROW_CAPACITY(self->capacity));
   }
   Entry *cur = _LoxHashMap_find(self, key);
   const bool isNewKey = cur->key == NULL;
