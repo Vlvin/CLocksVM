@@ -320,8 +320,8 @@ int main(int argc, char **argv) {
 
   if (build_tests(&cmd) != 0)
     nob_log(NOB_ERROR, "Test build unsuccesfull");
-  // if (build(&cmd) != 0)
-  //   nob_log(NOB_ERROR, "Build unsuccesfull");
+  if (build(&cmd) != 0)
+    nob_log(NOB_ERROR, "Build unsuccesfull");
   FREE();
   nob_cmd_free(cmd);
 }

@@ -103,6 +103,8 @@ void LoxParser_statement(LoxParser *self, LoxScanner *scanner) {
     LoxCompiler_endScope(self->masterCompiler);
   } else if (LoxParser_match(self, scanner, TOKEN_PRINT)) {
     LoxParser_printStatement(self, scanner);
+  } else if (LoxParser_match(self, scanner, TOKEN_FOR)) {
+    LoxParser_forStatement(self, scanner, self->masterCompiler);
   } else if (LoxParser_match(self, scanner, TOKEN_IF)) {
     LoxParser_ifStatement(self, scanner, self->masterCompiler);
   } else if (LoxParser_match(self, scanner, TOKEN_WHILE)) {
@@ -153,6 +155,61 @@ void LoxParser_whileStatement(LoxParser *self, LoxScanner *scanner,
   LoxCompiler_emitLoop(compiler, loopStart);
   LoxCompiler_patchJump(compiler, exitJump);
   _LoxCompiler_emitByte(compiler, OP_POP);
+}
+
+void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
+                            LoxCompiler *compiler) {
+  LoxCompiler_beginScope(compiler);
+  bool hadParen = LoxParser_match(self, scanner, TOKEN_LEFT_PAREN);
+  // optional var declaration
+  if (LoxParser_match(self, scanner, TOKEN_SEMICOLON)) {
+    // nothing
+  } else if (LoxParser_match(self, scanner, TOKEN_VAR)) {
+    LoxParser_varDeclaration(self, scanner);
+  } else {
+    LoxParser_expression(self);
+  }
+  int loopStartJmp = compiler->compilingChunk->size;
+  int exitJump = -1;
+  // optional condition (default true)
+  if (!LoxParser_match(self, scanner, TOKEN_SEMICOLON)) {
+    // nothing
+    LoxParser_expression(self);
+    LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
+                      "Expect ';' after for loop condition");
+
+    exitJump = LoxCompiler_emitJump(compiler, OP_JUMP_IF_FALSE);
+
+    _LoxCompiler_emitByte(compiler, OP_POP); // condition
+  }
+  // optional increment statement
+  if (!(hadParen && LoxParser_match(self, scanner, TOKEN_RIGHT_PAREN)) &&
+      !LoxParser_check(self, TOKEN_LEFT_BRACE)) {
+    int bodyJump = LoxCompiler_emitJump(compiler, OP_JUMP);
+    int incJump = compiler->compilingChunk->size;
+    // inc
+    LoxParser_expression(self);
+    bool closedParen = LoxParser_match(self, scanner, TOKEN_RIGHT_PAREN);
+    if (hadParen != closedParen) {
+      errorAt(self, &self->previous, "Mismatching parens around for loop");
+    }
+    LoxCompiler_emitLoop(compiler, loopStartJmp);
+    loopStartJmp = incJump;
+    // inc end
+    LoxCompiler_patchJump(compiler, bodyJump);
+  }
+
+  // body
+  LoxParser_consume(self, scanner, TOKEN_LEFT_BRACE,
+                    "Expect '{' before for loop body");
+  LoxParser_blockStatement(self, scanner);
+
+  LoxCompiler_emitLoop(compiler, loopStartJmp);
+  if (exitJump != -1) {
+    LoxCompiler_patchJump(compiler, exitJump);
+    _LoxCompiler_emitByte(compiler, OP_POP); // condition
+  }
+  LoxCompiler_endScope(compiler);
 }
 
 void LoxParser_ifStatement(LoxParser *self, LoxScanner *scanner,
