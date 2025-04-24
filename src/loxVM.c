@@ -21,6 +21,7 @@ void LoxVM_init(LoxVM *self) {
   LoxStack_init(&self->stack);
   LoxHashMap_init(&self->strings);
   LoxHashMap_init(&self->globals);
+  self->objects = NULL;
 }
 
 void LoxVM_free(LoxVM *self) {
@@ -33,6 +34,7 @@ void LoxVM_free(LoxVM *self) {
 void LoxVM_freeObjects(LoxVM *self) {
   LoxObject *cur = NULL;
   LoxObject *next = self->objects;
+  self->objects = NULL;
   while (next != NULL) {
     cur = next;
     next = next->next;
@@ -268,24 +270,24 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
 }
 
 LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
-  Chunk chunk;
-  Chunk_init(&chunk);
 
   LoxCompiler compiler;
-  LoxCompiler_init(&compiler);
+  LoxCompiler_init(&compiler, LOX_TYPE_TOP_LEVEL);
 
-  if (!LoxCompiler_compile(&compiler, source, &chunk)) {
-    Chunk_free(&chunk);
+  LoxFunction *compiled = LoxCompiler_compile(&compiler, source);
+
+  if (!compiled) {
     LoxCompiler_free(&compiler);
     return LOX_INTERPRET_COMPILE_ERROR;
   }
 
-  self->chunk = &chunk;
-  self->instruction = &chunk.code[0];
+  Chunk *chunk = &compiled->chunk;
 
-  LoxResult result = _LoxVM_run(self, &chunk);
+  self->chunk = chunk;
+  self->instruction = &chunk->code[0];
 
-  Chunk_free(&chunk);
+  LoxResult result = _LoxVM_run(self, chunk);
+
   LoxCompiler_free(&compiler);
   return result;
 }

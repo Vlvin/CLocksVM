@@ -1,4 +1,5 @@
 #include "loxErrors.h"
+#include "loxObject.h"
 #include "loxParser.h"
 #include "loxScanner.h"
 #include <bitsTricks.h>
@@ -10,15 +11,22 @@
 #include <debug.h>
 #endif
 
-void LoxCompiler_init(LoxCompiler *self) {
+void LoxCompiler_init(LoxCompiler *self, LoxScopeType scope) {
   LoxParser_init(&self->parser, self);
   self->localCount = 0;
   self->scopeDepth = 0;
+  self->function = NULL;
+  self->scopeType = scope;
+  self->function = LoxFunction_new();
+
+  LoxLocal *local = &self->locals[self->localCount++];
+  local->depth = 0;
+  local->name.start = "";
+  local->name.size = 0;
 }
 
-bool LoxCompiler_compile(LoxCompiler *self, const char *source, Chunk *chunk) {
+LoxFunction *LoxCompiler_compile(LoxCompiler *self, const char *source) {
   LoxScanner_init(&self->scanner, source);
-  self->compilingChunk = chunk;
 
   LoxParser_advance(&self->parser, &self->scanner);
   while (!LoxParser_match(&self->parser, &self->scanner, TOKEN_EOF))
@@ -26,25 +34,31 @@ bool LoxCompiler_compile(LoxCompiler *self, const char *source, Chunk *chunk) {
   /*LoxParser_expression(&self->parser);*/
   /*LoxParser_consume(&self->parser, &self->scanner, TOKEN_SEMICOLON, "Expect
    * end of expression");*/
-  LoxCompiler_end(self);
+  LoxFunction *function = LoxCompiler_end(self);
   LoxScanner_free(&self->scanner);
-  return !self->parser.hadError;
+  return self->parser.hadError ? NULL : function;
 }
 
 Chunk *LoxCompiler_currentChunk(LoxCompiler *self) {
-  return self->compilingChunk;
+  return &self->function->chunk;
 }
 
-void LoxCompiler_end(LoxCompiler *self) {
+LoxFunction *LoxCompiler_end(LoxCompiler *self) {
   _LoxCompiler_emitReturn(self);
+  LoxFunction *function = self->function;
+
 #ifdef DEBUG_PRINT_CODE
   if (!self->parser.hadError)
-    disassembleChunk(self->compilingChunk, "code");
+    disassembleChunk(&self->function->chunk, function->name != NULL
+                                                 ? function->name->bytes
+                                                 : "<script>");
 #endif
+  return function;
 }
 
 void LoxCompiler_free(LoxCompiler *self) {
   LoxParser_free(&self->parser);
+  // LoxObject_free((LoxObject *)self->function);
   (*self) = (LoxCompiler){0};
 }
 
@@ -91,27 +105,27 @@ void LoxCompiler_endScope(LoxCompiler *self) {
 }
 
 uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value) {
-  return Chunk_addConstant(self->compilingChunk, value);
+  return Chunk_addConstant(&self->function->chunk, value);
 }
 
 void LoxCompiler_patchJump(LoxCompiler *self, int offset) {
-  int jump = self->compilingChunk->size - offset - 2;
+  int jump = LoxCompiler_currentChunk(self)->size - offset - 2;
   if (jump > UINT16_MAX) {
     errorAt(&self->parser, &self->parser.previous, "Too much to jump");
   }
   uint8_Pair jumpPair = split_uint16(jump);
-  *(&self->compilingChunk->code[offset]) = jumpPair.first;
-  *(&self->compilingChunk->code[offset + 1]) = jumpPair.second;
+  *(&LoxCompiler_currentChunk(self)->code[offset]) = jumpPair.first;
+  *(&LoxCompiler_currentChunk(self)->code[offset + 1]) = jumpPair.second;
 }
 
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte) {
   Chunk_add(LoxCompiler_currentChunk(self), byte, self->parser.previous.line);
 }
 
-int LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
+void LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
 
   _LoxCompiler_emitByte(self, OP_LOOP);
-  int offset = self->compilingChunk->size - loopStart + 2;
+  int offset = LoxCompiler_currentChunk(self)->size - loopStart + 2;
   if (offset > UINT16_MAX) {
     errorAt(&self->parser, &self->parser.previous, "Too big loop size");
   }
@@ -121,7 +135,7 @@ int LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
 
 int LoxCompiler_emitJump(LoxCompiler *self, uint8_t instruction) {
   _LoxCompiler_emitBytes(self, 3, instruction, 0xff, 0xff);
-  return self->compilingChunk->size - 2;
+  return LoxCompiler_currentChunk(self)->size - 2;
 }
 
 void _LoxCompiler_emitBytes(LoxCompiler *self, int count, ...) {
@@ -138,7 +152,7 @@ void _LoxCompiler_emitReturn(LoxCompiler *self) {
 
 uint16_t _LoxCompiler_emitConstant(LoxCompiler *self, LoxValue value) {
   uint16_t constLocation = LoxCompiler_makeConstant(self, value);
-  size_t line = self->parser.previous.line;
+  // size_t line = self->parser.previous.line;
   if (constLocation > 255) {
     uint8_Pair operands = split_uint16(constLocation);
     _LoxCompiler_emitBytes(self, 3, OP_CONSTANT_LONG, operands.first,

@@ -56,6 +56,7 @@ LinkedList *allocated = &initial;
       free(cur);                                                               \
       cur = next;                                                              \
     }                                                                          \
+    allocated = &initial;                                                      \
   } while (0)
 
 void *allocate(uint size) {
@@ -128,11 +129,11 @@ int build_release_library(Nob_Cmd *cmd) {
     strncat(objectpath, filepath + srclen, fn_size);
     strcat(objectpath, ".o");
 
-    nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
+    // nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
     nob_cmd_append(cmd, "-c", filepath, "-o", objectpath);
 
     if (!nob_cmd_run_sync_and_reset(cmd)) {
-      nob_log(NOB_ERROR, "Failed to compile");
+      nob_log(NOB_ERROR, "Failed to compile %s", objectpath);
       all_objects_compiled = false;
     }
   }
@@ -159,7 +160,7 @@ int build_release_library(Nob_Cmd *cmd) {
     Nob_File_Type type = nob_get_file_type(buff);
     if (type != NOB_FILE_REGULAR)
       continue;
-    nob_log(NOB_INFO, "Discovered object %s", buff);
+    // nob_log(NOB_INFO, "Discovered object %s", buff);
     nob_cmd_append(cmd, buff);
   }
   if (!nob_cmd_run_sync_and_reset(cmd)) {
@@ -206,11 +207,11 @@ int build_debug_library(Nob_Cmd *cmd) {
     strncat(objectpath, filepath + srclen, fn_size);
     strcat(objectpath, ".o");
 
-    nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
+    // nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
     nob_cmd_append(cmd, "-c", filepath, "-o", objectpath);
 
     if (!nob_cmd_run_sync_and_reset(cmd)) {
-      nob_log(NOB_ERROR, "Failed to compile");
+      nob_log(NOB_ERROR, "Failed to compile %s", filepath);
       all_objects_compiled = false;
     }
   }
@@ -237,7 +238,7 @@ int build_debug_library(Nob_Cmd *cmd) {
     Nob_File_Type type = nob_get_file_type(buff);
     if (type != NOB_FILE_REGULAR)
       continue;
-    nob_log(NOB_INFO, "Discovered object %s", buff);
+    // nob_log(NOB_INFO, "Discovered object %s", buff);
     nob_cmd_append(cmd, buff);
   }
   if (!nob_cmd_run_sync_and_reset(cmd)) {
@@ -285,8 +286,8 @@ int build_tests(Nob_Cmd *cmd) {
 
   char filepath_noext[64] = TESTS_FOLDER;
   int output_len = strlen(TESTS_FOLDER);
-  nob_log(NOB_INFO, "outlen filepath = %s with size %d", filepath_noext,
-          output_len);
+  // nob_log(NOB_INFO, "outlen filepath = %s with size %d", filepath_noext,
+  //         output_len);
 
   for (uint i = 0; i < children.count; i++) {
 
@@ -298,7 +299,7 @@ int build_tests(Nob_Cmd *cmd) {
     filepath_noext[output_len] = '\0';
     strcat(filepath_noext, children.items[i]);
     filepath_noext[strlen(filepath_noext) - 2] = '\0';
-    nob_log(NOB_INFO, "Discovered test %s", filepath);
+    // nob_log(NOB_INFO, "Discovered test %s", filepath);
     nob_cmd_append(cmd, "cc", filepath, "-L" SRC_LIB_FOLDER "release/",
                    "-l" PROJECT_NAME, CFLAGS, RELEASE_FLAGS, "-o",
                    filepath_noext);

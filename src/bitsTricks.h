@@ -4,7 +4,7 @@
 #include <oneFileSTD.h>
 
 typedef struct {
-    uint8_t first, second;
+  uint8_t first, second;
 } uint8_Pair;
 
 uint8_Pair split_uint16(uint16_t value);

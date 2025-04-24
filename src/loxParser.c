@@ -139,7 +139,7 @@ void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner) {
 
 void LoxParser_whileStatement(LoxParser *self, LoxScanner *scanner,
                               LoxCompiler *compiler) {
-  int loopStart = compiler->compilingChunk->size;
+  int loopStart = LoxCompiler_currentChunk(compiler)->size;
   // while
   // condition
   LoxParser_expression(self);
@@ -169,7 +169,7 @@ void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
   } else {
     LoxParser_expression(self);
   }
-  int loopStartJmp = compiler->compilingChunk->size;
+  int loopStartJmp = LoxCompiler_currentChunk(compiler)->size;
   int exitJump = -1;
   // optional condition (default true)
   if (!LoxParser_match(self, scanner, TOKEN_SEMICOLON)) {
@@ -186,7 +186,7 @@ void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
   if (!(hadParen && LoxParser_match(self, scanner, TOKEN_RIGHT_PAREN)) &&
       !LoxParser_check(self, TOKEN_LEFT_BRACE)) {
     int bodyJump = LoxCompiler_emitJump(compiler, OP_JUMP);
-    int incJump = compiler->compilingChunk->size;
+    int incJump = LoxCompiler_currentChunk(compiler)->size;
     // inc
     LoxParser_expression(self);
     bool closedParen = LoxParser_match(self, scanner, TOKEN_RIGHT_PAREN);
@@ -401,9 +401,7 @@ void LoxParser_unary(LoxParser *self, bool canAssign) {
   }
 }
 
-inline static LoxParseRule *LoxParser_getRule(TokenType type) {
-  return &rules[type];
-}
+LoxParseRule *LoxParser_getRule(TokenType type) { return &rules[type]; }
 
 void LoxParser_or(LoxParser *self, bool canAssign) {
   LoxCompiler *compiler = self->masterCompiler;

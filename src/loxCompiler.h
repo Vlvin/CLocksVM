@@ -10,6 +10,13 @@
 
 #define UINT8_COUNT (UINT8_MAX + 1)
 
+typedef struct LoxFunction LoxFunction;
+
+typedef enum LoxScopeType {
+  LOX_TYPE_FUNCTION,
+  LOX_TYPE_TOP_LEVEL,
+} LoxScopeType;
+
 typedef struct LoxLocal {
   LoxToken name;
   int depth;
@@ -18,16 +25,18 @@ typedef struct LoxLocal {
 typedef struct LoxCompiler {
   LoxScanner scanner;
   LoxParser parser;
-  Chunk *compilingChunk;
+  // Chunk *compilingChunk;
+  LoxFunction *function;
+  LoxScopeType scopeType;
   LoxLocal locals[UINT8_COUNT];
   int localCount;
   int scopeDepth;
 } LoxCompiler;
 
-void LoxCompiler_init(LoxCompiler *self);
-bool LoxCompiler_compile(LoxCompiler *self, const char *source, Chunk *chunk);
+void LoxCompiler_init(LoxCompiler *self, LoxScopeType scope);
+LoxFunction *LoxCompiler_compile(LoxCompiler *self, const char *source);
 Chunk *LoxCompiler_currentChunk(LoxCompiler *self);
-void LoxCompiler_end(LoxCompiler *self);
+LoxFunction *LoxCompiler_end(LoxCompiler *self);
 void LoxCompiler_free(LoxCompiler *self);
 uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value);
 void LoxCompiler_beginScope(LoxCompiler *self);
@@ -38,7 +47,7 @@ int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name);
 // private:
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t instruction);
 int LoxCompiler_emitJump(LoxCompiler *self, uint8_t instruction);
-int LoxCompiler_emitLoop(LoxCompiler *self, int loopStart);
+void LoxCompiler_emitLoop(LoxCompiler *self, int loopStart);
 void _LoxCompiler_emitBytes(LoxCompiler *self, int count, ...);
 void _LoxCompiler_emitReturn(LoxCompiler *self);
 uint16_t _LoxCompiler_emitConstant(LoxCompiler *self, LoxValue value);

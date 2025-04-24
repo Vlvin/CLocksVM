@@ -44,7 +44,7 @@ void LoxParser_consume(LoxParser *self, LoxScanner *scanner, TokenType type,
                        const char *error_message);
 bool LoxParser_check(LoxParser *self, TokenType type);
 bool LoxParser_match(LoxParser *self, LoxScanner *scanner, TokenType type);
-inline static LoxParseRule *LoxParser_getRule(TokenType type);
+LoxParseRule *LoxParser_getRule(TokenType type);
 
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxCompiler *compiler,
                                  LoxScanner *scanner, const char *errorMessage);
