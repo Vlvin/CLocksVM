@@ -23,49 +23,6 @@
 // (In these examples we actually symlinking nob.h, but this is to keep nob.h-s
 // synced among all the examples)
 #include "nob.h"
-
-// TODO: add more comments in here
-
-///// Memory tracking ///////////////////////////////////////////////////////
-typedef struct LinkedList LinkedList;
-struct LinkedList {
-  void *element;
-  LinkedList *next;
-};
-LinkedList initial = {0};
-LinkedList *allocated = &initial;
-
-#define ALLOCATE(size)                                                         \
-  do {                                                                         \
-    LinkedList *node = (LinkedList *)malloc(sizeof(LinkedList));               \
-    node->next = allocated;                                                    \
-    node->element = (void *)malloc(size);                                      \
-    allocated = node;                                                          \
-  } while (0)
-
-#define FREE()                                                                 \
-  do {                                                                         \
-    if (allocated == NULL)                                                     \
-      break;                                                                   \
-    LinkedList *cur = allocated;                                               \
-    LinkedList *next = allocated;                                              \
-    while (cur->next != NULL) {                                                \
-      next = cur->next;                                                        \
-      if (cur->element != NULL)                                                \
-        free(cur->element);                                                    \
-      free(cur);                                                               \
-      cur = next;                                                              \
-    }                                                                          \
-    allocated = &initial;                                                      \
-  } while (0)
-
-void *allocate(uint size) {
-  ALLOCATE(size);
-  return allocated->element;
-}
-
-///// Memory tracking end ////////////////////////////////////////////////////
-
 ///// String collection ////////////////////////////////////////////////////
 #define ENDS_WITH(str, postfix)                                                \
   (strlen(str) >= strlen(postfix) &&                                           \
@@ -81,20 +38,16 @@ int find_last(const char *const hay, char needle) {
 
 ///// String collection end ////////////////////////////////////////////////////
 
-typedef struct {
-  char **flags;
-  size_t count;
-  size_t capacity;
-} Flags;
-
 #define PROJECT_NAME "CLocksCompiler"
 
+// paths
 #define BUILD_FOLDER "build/"
 #define SRC_FOLDER "src/"
 #define TESTS_SRC_FOLDER "tests/"
 #define TESTS_FOLDER "build/tests/"
 #define LIB_FOLDER BUILD_FOLDER "lib/"
 #define SRC_LIB_FOLDER LIB_FOLDER "src/"
+// flags
 #define CFLAGS "-Wall", "-I" SRC_FOLDER
 #define DEBUG_FLAGS "-O0", "-ggdb", "-DDEBUG_PRINT_CODE", "-DDEBUG_TRACE"
 #define RELEASE_FLAGS "-O3"
@@ -115,11 +68,11 @@ const char *lib_postfix[] = {"_Release", "_Debug"};
     }                                                                          \
   } while (0)
 
-int SRC_LEN = strlen(SRC_FOLDER);
+const int SRC_LEN = strlen(SRC_FOLDER);
 
 Nob_Procs procs = {0};
 
-int build_library(Nob_Cmd *cmd, Build_Type build_type) {
+int build_library(Nob_Cmd *cmd, Nob_Procs *procs, Build_Type build_type) {
   const char *lib_path =
       nob_temp_sprintf("%s%s", SRC_LIB_FOLDER, lib_subpath[build_type]);
   if (!(nob_mkdir_if_not_exists(BUILD_FOLDER) &&
@@ -155,10 +108,10 @@ int build_library(Nob_Cmd *cmd, Build_Type build_type) {
     cmd_append_flags(cmd, build_type);
     nob_cmd_append(cmd, "-c", filepath, "-o", objectpath);
 
-    nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
+    nob_da_append(procs, nob_cmd_run_async_and_reset(cmd));
   }
   cmd->count = 0;
-  bool all_object_compiled = nob_procs_wait_and_reset(&procs);
+  bool all_object_compiled = nob_procs_wait_and_reset(procs);
   if (!all_objects_compiled) {
     nob_log(NOB_ERROR, "Failed to compile all objects");
     nob_temp_reset();
@@ -180,19 +133,23 @@ int build_library(Nob_Cmd *cmd, Build_Type build_type) {
     nob_cmd_append(cmd, object_path);
   }
   nob_temp_reset();
-  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
-  if (!nob_procs_wait_and_reset(&procs)) {
+  nob_da_append(procs, nob_cmd_run_async_and_reset(cmd));
+  if (!nob_procs_wait_and_reset(procs)) {
     nob_log(NOB_ERROR, "Failed to create library");
     return 1;
   }
   return 0;
 }
 
-int build_release_library(Nob_Cmd *cmd) { return build_library(cmd, RELEASE); }
+int build_release_library(Nob_Cmd *cmd, Nob_Procs *procs) {
+  return build_library(cmd, procs, RELEASE);
+}
 
-int build_debug_library(Nob_Cmd *cmd) { return build_library(cmd, DEBUG); }
+int build_debug_library(Nob_Cmd *cmd, Nob_Procs *procs) {
+  return build_library(cmd, procs, DEBUG);
+}
 
-int build_exec(Nob_Cmd *cmd) {
+int build_exec(Nob_Cmd *cmd, Nob_Procs *procs) {
   int ok = 0;
 
   if (!nob_mkdir_if_not_exists(BUILD_FOLDER))
@@ -204,7 +161,7 @@ int build_exec(Nob_Cmd *cmd) {
   nob_cmd_append(cmd, "-o", BUILD_FOLDER PROJECT_NAME "_Release",
                  "-Lbuild/lib/src/release/", "-l" PROJECT_NAME);
 
-  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
+  nob_da_append(procs, nob_cmd_run_async_and_reset(cmd));
 
   // Debug
   nob_cmd_append(cmd, "cc", SRC_FOLDER "main.c", CFLAGS);
@@ -212,8 +169,8 @@ int build_exec(Nob_Cmd *cmd) {
   nob_cmd_append(cmd, "-o", BUILD_FOLDER PROJECT_NAME "_Debug",
                  "-Lbuild/lib/src/debug/", "-l" PROJECT_NAME);
 
-  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
-  if (!nob_procs_wait_and_reset(&procs)) {
+  nob_da_append(procs, nob_cmd_run_async_and_reset(cmd));
+  if (!nob_procs_wait_and_reset(procs)) {
     nob_log(NOB_ERROR, "Failed to executables");
     ok = 1;
   }
@@ -221,7 +178,7 @@ int build_exec(Nob_Cmd *cmd) {
   return ok;
 }
 
-int build_tests(Nob_Cmd *cmd) {
+int build_tests(Nob_Cmd *cmd, Nob_Procs *procs) {
   int ok = 0;
   cmd->count = 0;
 
@@ -246,11 +203,12 @@ int build_tests(Nob_Cmd *cmd) {
                    "-l" PROJECT_NAME, CFLAGS);
     cmd_append_flags(cmd, RELEASE);
     nob_cmd_append(cmd, "-o", filepath_noext);
-    if (!nob_cmd_run_sync_and_reset(cmd)) {
-      nob_log(NOB_ERROR, "Failed to build test %s",
-              filepath_noext + output_len);
-      ok = -1;
-    }
+
+    nob_da_append(procs, nob_cmd_run_async_and_reset(cmd));
+  }
+  if (!nob_procs_wait_and_reset(procs)) {
+    nob_log(NOB_ERROR, "Failed to build tests");
+    ok = -1;
   }
   nob_temp_reset();
   return ok;
@@ -260,13 +218,13 @@ int main(int argc, char **argv) {
   NOB_GO_REBUILD_URSELF(argc, argv);
 
   Nob_Cmd cmd = {0};
-  build_release_library(&cmd);
-  build_debug_library(&cmd);
+  build_release_library(&cmd, &procs);
+  build_debug_library(&cmd, &procs);
 
-  if (build_tests(&cmd) != 0)
+  if (build_tests(&cmd, &procs) != 0)
     nob_log(NOB_ERROR, "Test build unsuccesfull");
-  if (build_exec(&cmd) != 0)
+  if (build_exec(&cmd, &procs) != 0)
     nob_log(NOB_ERROR, "Build unsuccesfull");
-  FREE();
   nob_cmd_free(cmd);
+  nob_da_free(procs);
 }
