@@ -101,7 +101,7 @@ int build_library(Nob_Cmd *cmd, Nob_Procs *procs, Build_Type build_type) {
 
     int filename_size = strlen(filepath) - SRC_LEN - 2;
 
-    char *objectpath = nob_temp_sprintf("%s%*.s.o", lib_path, filename_size,
+    char *objectpath = nob_temp_sprintf("%s%*s.o", lib_path, filename_size,
                                         filepath + SRC_LEN);
 
     nob_cmd_append(cmd, "cc", CFLAGS);
