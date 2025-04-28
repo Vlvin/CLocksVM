@@ -81,194 +81,144 @@ int find_last(const char *const hay, char needle) {
 
 ///// String collection end ////////////////////////////////////////////////////
 
+typedef struct {
+  char **flags;
+  size_t count;
+  size_t capacity;
+} Flags;
+
 #define PROJECT_NAME "CLocksCompiler"
 
 #define BUILD_FOLDER "build/"
 #define SRC_FOLDER "src/"
+#define TESTS_SRC_FOLDER "tests/"
+#define TESTS_FOLDER "build/tests/"
 #define LIB_FOLDER BUILD_FOLDER "lib/"
 #define SRC_LIB_FOLDER LIB_FOLDER "src/"
 #define CFLAGS "-Wall", "-I" SRC_FOLDER
 #define DEBUG_FLAGS "-O0", "-ggdb", "-DDEBUG_PRINT_CODE", "-DDEBUG_TRACE"
 #define RELEASE_FLAGS "-O3"
-#define TESTS_SRC_FOLDER "tests/"
-#define TESTS_FOLDER "build/tests/"
 
-int build_release_library(Nob_Cmd *cmd) {
-  const char *lib_path = SRC_LIB_FOLDER "release/";
+typedef enum { RELEASE = 0, DEBUG = 1 } Build_Type;
+const char *lib_subpath[] = {"release/", "debug/"};
+const char *lib_postfix[] = {"_Release", "_Debug"};
+
+#define cmd_append_flags(cmd, built_type)                                      \
+  do {                                                                         \
+    switch (built_type) {                                                      \
+    case DEBUG:                                                                \
+      nob_cmd_append(cmd, DEBUG_FLAGS);                                        \
+      break;                                                                   \
+    case RELEASE:                                                              \
+      nob_cmd_append(cmd, RELEASE_FLAGS);                                      \
+      break;                                                                   \
+    }                                                                          \
+  } while (0)
+
+int SRC_LEN = strlen(SRC_FOLDER);
+
+Nob_Procs procs = {0};
+
+int build_library(Nob_Cmd *cmd, Build_Type build_type) {
+  const char *lib_path =
+      nob_temp_sprintf("%s%s", SRC_LIB_FOLDER, lib_subpath[build_type]);
   if (!(nob_mkdir_if_not_exists(BUILD_FOLDER) &&
         nob_mkdir_if_not_exists(LIB_FOLDER) &&
         nob_mkdir_if_not_exists(SRC_LIB_FOLDER) &&
-        nob_mkdir_if_not_exists(lib_path)))
+        nob_mkdir_if_not_exists(lib_path))) {
+    nob_temp_reset();
     return 1;
+  }
   cmd->count = 0;
   // Objects
 
   Nob_File_Paths children = {0};
   nob_read_entire_dir(SRC_FOLDER, &children);
 
-  char filepath[64] = {0};
-  int srclen = strlen(SRC_FOLDER);
-  char objectpath[64] = {0};
-  int srcliblen = strlen(lib_path);
-
   bool all_objects_compiled = true;
 
   for (uint i = 0; i < children.count; i++) {
     cmd->count = 0;
-    strcpy(filepath, SRC_FOLDER);
-    strcpy(objectpath, lib_path);
-    nob_cmd_append(cmd, "cc", CFLAGS, RELEASE_FLAGS);
-    strcpy(filepath + srclen, children.items[i]);
+    char *filepath = nob_temp_sprintf(SRC_FOLDER "%s", children.items[i]);
     Nob_File_Type type = nob_get_file_type(filepath);
 
     if (type != NOB_FILE_REGULAR || !ENDS_WITH(filepath, ".c") ||
         ENDS_WITH(filepath, "main.c"))
       continue;
 
-    int fn_size = strlen(filepath) - srclen - 2;
-    strncat(objectpath, filepath + srclen, fn_size);
-    strcat(objectpath, ".o");
+    int filename_size = strlen(filepath) - SRC_LEN - 2;
 
-    // nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
+    char *objectpath = nob_temp_sprintf("%s%*.s.o", lib_path, filename_size,
+                                        filepath + SRC_LEN);
+
+    nob_cmd_append(cmd, "cc", CFLAGS);
+    cmd_append_flags(cmd, build_type);
     nob_cmd_append(cmd, "-c", filepath, "-o", objectpath);
 
-    if (!nob_cmd_run_sync_and_reset(cmd)) {
-      nob_log(NOB_ERROR, "Failed to compile %s", objectpath);
-      all_objects_compiled = false;
-    }
+    nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
   }
   cmd->count = 0;
+  bool all_object_compiled = nob_procs_wait_and_reset(&procs);
   if (!all_objects_compiled) {
     nob_log(NOB_ERROR, "Failed to compile all objects");
+    nob_temp_reset();
     return 1;
   }
   // Library
 
   nob_cmd_append(cmd, "ar", "ruv",
-                 SRC_LIB_FOLDER "release/"
-                                "lib" PROJECT_NAME ".a");
+                 nob_temp_sprintf("%slib" PROJECT_NAME ".a", lib_path));
 
   children.count = 0;
   nob_read_entire_dir(lib_path, &children);
 
   for (uint i = 0; i < children.count; i++) {
-
-    char *buff = (char *)allocate(srcliblen + strlen(children.items[i]) + 1);
-    buff[0] = '\0';
-    strcat(buff, lib_path);
-    strcat(buff, children.items[i]);
-    Nob_File_Type type = nob_get_file_type(buff);
+    char *object_path = nob_temp_sprintf("%s%s", lib_path, children.items[i]);
+    Nob_File_Type type = nob_get_file_type(object_path);
     if (type != NOB_FILE_REGULAR)
       continue;
-    // nob_log(NOB_INFO, "Discovered object %s", buff);
-    nob_cmd_append(cmd, buff);
+    nob_cmd_append(cmd, object_path);
   }
-  if (!nob_cmd_run_sync_and_reset(cmd)) {
-    nob_log(NOB_ERROR, "Failed to build static library %s%s", lib_path,
-            "lib" PROJECT_NAME ".a");
+  nob_temp_reset();
+  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
+  if (!nob_procs_wait_and_reset(&procs)) {
+    nob_log(NOB_ERROR, "Failed to create library");
     return 1;
   }
   return 0;
 }
 
-int build_debug_library(Nob_Cmd *cmd) {
-  const char *lib_path = SRC_LIB_FOLDER "debug/";
-  if (!(nob_mkdir_if_not_exists(BUILD_FOLDER) &&
-        nob_mkdir_if_not_exists(LIB_FOLDER) &&
-        nob_mkdir_if_not_exists(SRC_LIB_FOLDER) &&
-        nob_mkdir_if_not_exists(lib_path)))
-    return 1;
-  cmd->count = 0;
-  // Objects
+int build_release_library(Nob_Cmd *cmd) { return build_library(cmd, RELEASE); }
 
-  Nob_File_Paths children = {0};
-  nob_read_entire_dir(SRC_FOLDER, &children);
+int build_debug_library(Nob_Cmd *cmd) { return build_library(cmd, DEBUG); }
 
-  char filepath[64] = SRC_FOLDER;
-  int srclen = strlen(SRC_FOLDER);
-  char objectpath[64] = {0};
-  int srcliblen = strlen(lib_path);
-
-  bool all_objects_compiled = true;
-
-  for (uint i = 0; i < children.count; i++) {
-    cmd->count = 0;
-    strcpy(filepath, SRC_FOLDER);
-    strcpy(objectpath, lib_path);
-    nob_cmd_append(cmd, "cc", CFLAGS, DEBUG_FLAGS);
-    strcpy(filepath + srclen, children.items[i]);
-    Nob_File_Type type = nob_get_file_type(filepath);
-
-    if (type != NOB_FILE_REGULAR || !ENDS_WITH(filepath, ".c") ||
-        ENDS_WITH(filepath, "main.c"))
-      continue;
-
-    int fn_size = strlen(filepath) - srclen - 2;
-    strncat(objectpath, filepath + srclen, fn_size);
-    strcat(objectpath, ".o");
-
-    // nob_log(NOB_INFO, "compiling %s to %s", filepath, objectpath);
-    nob_cmd_append(cmd, "-c", filepath, "-o", objectpath);
-
-    if (!nob_cmd_run_sync_and_reset(cmd)) {
-      nob_log(NOB_ERROR, "Failed to compile %s", filepath);
-      all_objects_compiled = false;
-    }
-  }
-  cmd->count = 0;
-  if (!all_objects_compiled) {
-    nob_log(NOB_ERROR, "Failed to compile all objects");
-    return 1;
-  }
-  // Library
-
-  nob_cmd_append(cmd, "ar", "ruv",
-                 SRC_LIB_FOLDER "debug/"
-                                "lib" PROJECT_NAME ".a");
-
-  children.count = 0;
-  nob_read_entire_dir(lib_path, &children);
-
-  for (uint i = 0; i < children.count; i++) {
-
-    char *buff = (char *)allocate(srcliblen + strlen(children.items[i]) + 1);
-    buff[0] = '\0';
-    strcat(buff, lib_path);
-    strcat(buff, children.items[i]);
-    Nob_File_Type type = nob_get_file_type(buff);
-    if (type != NOB_FILE_REGULAR)
-      continue;
-    // nob_log(NOB_INFO, "Discovered object %s", buff);
-    nob_cmd_append(cmd, buff);
-  }
-  if (!nob_cmd_run_sync_and_reset(cmd)) {
-    nob_log(NOB_ERROR, "Failed to build static library %s%s", lib_path,
-            "lib" PROJECT_NAME ".a");
-    return 1;
-  }
-  return 0;
-}
-
-int build(Nob_Cmd *cmd) {
+int build_exec(Nob_Cmd *cmd) {
+  int ok = 0;
 
   if (!nob_mkdir_if_not_exists(BUILD_FOLDER))
     return 1;
 
   // Release
-  nob_cmd_append(cmd, "cc", SRC_FOLDER "main.c", CFLAGS, RELEASE_FLAGS, "-o",
-                 BUILD_FOLDER PROJECT_NAME "_Release",
+  nob_cmd_append(cmd, "cc", SRC_FOLDER "main.c", CFLAGS);
+  cmd_append_flags(cmd, RELEASE);
+  nob_cmd_append(cmd, "-o", BUILD_FOLDER PROJECT_NAME "_Release",
                  "-Lbuild/lib/src/release/", "-l" PROJECT_NAME);
 
-  if (!nob_cmd_run_sync_and_reset(cmd))
-    return 1;
+  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
 
   // Debug
-  nob_cmd_append(cmd, "cc", SRC_FOLDER "main.c", CFLAGS, DEBUG_FLAGS, "-o",
-                 BUILD_FOLDER PROJECT_NAME "_Debug", "-Lbuild/lib/src/debug/",
-                 "-l" PROJECT_NAME);
-  if (!nob_cmd_run_sync_and_reset(cmd))
-    return 1;
-  return 0;
+  nob_cmd_append(cmd, "cc", SRC_FOLDER "main.c", CFLAGS);
+  cmd_append_flags(cmd, DEBUG);
+  nob_cmd_append(cmd, "-o", BUILD_FOLDER PROJECT_NAME "_Debug",
+                 "-Lbuild/lib/src/debug/", "-l" PROJECT_NAME);
+
+  nob_da_append(&procs, nob_cmd_run_async_and_reset(cmd));
+  if (!nob_procs_wait_and_reset(&procs)) {
+    nob_log(NOB_ERROR, "Failed to executables");
+    ok = 1;
+  }
+
+  return ok;
 }
 
 int build_tests(Nob_Cmd *cmd) {
@@ -280,35 +230,29 @@ int build_tests(Nob_Cmd *cmd) {
   Nob_File_Paths children = {0};
   nob_read_entire_dir(TESTS_SRC_FOLDER, &children);
 
-  char filepath[64] = "";
-  strcat(filepath, TESTS_SRC_FOLDER);
-  int testslen = strlen(TESTS_SRC_FOLDER);
-
-  char filepath_noext[64] = TESTS_FOLDER;
-  int output_len = strlen(TESTS_FOLDER);
-  // nob_log(NOB_INFO, "outlen filepath = %s with size %d", filepath_noext,
-  //         output_len);
+  const int output_len = strlen(TESTS_FOLDER);
 
   for (uint i = 0; i < children.count; i++) {
 
-    filepath[testslen] = '\0';
-    strcat(filepath, children.items[i]);
+    const char *filepath =
+        nob_temp_sprintf(TESTS_SRC_FOLDER "%s", children.items[i]);
     Nob_File_Type type = nob_get_file_type(filepath);
     if (type != NOB_FILE_REGULAR)
       continue;
-    filepath_noext[output_len] = '\0';
-    strcat(filepath_noext, children.items[i]);
-    filepath_noext[strlen(filepath_noext) - 2] = '\0';
-    // nob_log(NOB_INFO, "Discovered test %s", filepath);
+    const char *filepath_noext =
+        nob_temp_sprintf(TESTS_FOLDER "%*.s",
+                         (int)strlen(children.items[i]) - 2, children.items[i]);
     nob_cmd_append(cmd, "cc", filepath, "-L" SRC_LIB_FOLDER "release/",
-                   "-l" PROJECT_NAME, CFLAGS, RELEASE_FLAGS, "-o",
-                   filepath_noext);
+                   "-l" PROJECT_NAME, CFLAGS);
+    cmd_append_flags(cmd, RELEASE);
+    nob_cmd_append(cmd, "-o", filepath_noext);
     if (!nob_cmd_run_sync_and_reset(cmd)) {
       nob_log(NOB_ERROR, "Failed to build test %s",
               filepath_noext + output_len);
       ok = -1;
     }
   }
+  nob_temp_reset();
   return ok;
 }
 
@@ -321,7 +265,7 @@ int main(int argc, char **argv) {
 
   if (build_tests(&cmd) != 0)
     nob_log(NOB_ERROR, "Test build unsuccesfull");
-  if (build(&cmd) != 0)
+  if (build_exec(&cmd) != 0)
     nob_log(NOB_ERROR, "Build unsuccesfull");
   FREE();
   nob_cmd_free(cmd);
