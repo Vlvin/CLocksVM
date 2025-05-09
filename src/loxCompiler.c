@@ -81,12 +81,13 @@ int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name) {
   bool met_uninitialized_self = false;
   for (int i = self->localCount - 1; i >= 0; i--) {
     LoxLocal *local = &self->locals[i];
-    if (LoxToken_identifierEquals(name, &local->name))
+    if (LoxToken_identifierEquals(name, &local->name)) {
       if (local->depth == -1) {
         met_uninitialized_self = true;
         continue;
       }
-    return i;
+      return i;
+    }
   }
   if (met_uninitialized_self)
     errorAt(&self->parser, &self->parser.previous,

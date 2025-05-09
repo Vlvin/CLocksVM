@@ -56,8 +56,7 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
   do {                                                                         \
     if (!(IS_##left_lox_type(LoxStack_peek(stack, 0)) &&                       \
           IS_##left_lox_type(LoxStack_peek(stack, 1)))) {                      \
-      runtimeError(self, "Runtime error %s %s", "Expected Type",               \
-                   #left_lox_type);                                            \
+      runtimeError(self, "Expected Type %s", #left_lox_type);                  \
       return LOX_INTERPRET_RUNTIME_ERROR;                                      \
     }                                                                          \
     LoxValue b = LoxStack_pop(stack);                                          \
@@ -81,14 +80,7 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
   while (self->instruction < &chunk->code[chunk->size]) {
     uint8_t instruction;
 #ifdef DEBUG_TRACE
-    printf("    ");
-    for (LoxValue *slot = self->stack.data; slot < self->stack.topElement;
-         slot++) {
-      printf("[ ");
-      printValue(*slot);
-      printf(" ]");
-    }
-    printf("\n");
+    LoxStack_print(stack);
     disassembleInstruction(chunk, (int)(self->instruction - chunk->code),
                            "LoxRun");
 #endif

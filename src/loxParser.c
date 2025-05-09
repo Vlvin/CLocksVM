@@ -179,7 +179,6 @@ void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
                       "Expect ';' after for loop condition");
 
     exitJump = LoxCompiler_emitJump(compiler, OP_JUMP_IF_FALSE);
-
     _LoxCompiler_emitByte(compiler, OP_POP); // condition
   }
   // optional increment statement
