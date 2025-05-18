@@ -21,6 +21,7 @@ void LoxVM_init(LoxVM *self) {
   LoxStack_init(&self->stack);
   LoxHashMap_init(&self->strings);
   LoxHashMap_init(&self->globals);
+
   self->objects = NULL;
 }
 
@@ -42,16 +43,24 @@ void LoxVM_freeObjects(LoxVM *self) {
   }
 }
 
-LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
+LoxResult _LoxVM_run(LoxVM *self) {
   LoxStack *stack = &self->stack;
+  LoxCallFrame *frame = &self->frames[self->frameCount - 1];
 
-#define READ_BYTE(vm) (*(vm)->instruction++)
+  Chunk *chunk = &frame->function->chunk;
+
+#define GET_FRAME(vm) (&self->frames[self->frameCount - 1])
+
+#define READ_BYTE(vm) (*(GET_FRAME(vm))->instruction++)
 #define READ_SHORT(vm)                                                         \
-  (forge_uint16((uint8_Pair){*(vm)->instruction++, *(vm)->instruction++}))
-#define READ_CONST(vm) Chunk_getConstant((vm)->chunk, READ_BYTE((vm)))
+  (forge_uint16((uint8_Pair){*(GET_FRAME(vm))->instruction++,                  \
+                             *(GET_FRAME(vm))->instruction++}))
+#define READ_CONST(vm)                                                         \
+  Chunk_getConstant(&GET_FRAME(vm)->function->chunk, READ_BYTE((vm)))
 #define READ_CONST_LONG(vm)                                                    \
-  Chunk_getConstant((vm)->chunk, forge_uint16((uint8_Pair){READ_BYTE((vm)),    \
-                                                           READ_BYTE((vm))}))
+  Chunk_getConstant(                                                           \
+      &GET_FRAME(vm)->function->chunk,                                         \
+      forge_uint16((uint8_Pair){READ_BYTE((vm)), READ_BYTE((vm))}))
 #define BINARY_OP(op, left_lox_type, output_lox_type)                          \
   do {                                                                         \
     if (!(IS_##left_lox_type(LoxStack_peek(stack, 0)) &&                       \
@@ -74,15 +83,18 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
         lox_type##_VAL(op AS_##lox_type(LoxStack_top(stack)));                 \
   } while (false);
 
-  self->chunk = chunk;
-  self->instruction = chunk->code;
+  // frame->instruction = chunk->code;
+  // self->chunk = chunk;
+  // self->instruction = chunk->code;
 
-  while (self->instruction < &chunk->code[chunk->size]) {
+  while (frame->instruction < &chunk->code[chunk->size]) {
     uint8_t instruction;
 #ifdef DEBUG_TRACE
     LoxStack_print(stack);
-    disassembleInstruction(chunk, (int)(self->instruction - chunk->code),
-                           "LoxRun");
+    disassembleInstruction(
+        chunk,
+        (int)(self->frames[self->frameCount - 1].instruction - chunk->code),
+        "LoxRun");
 #endif
     switch (instruction = READ_BYTE(self)) {
     case OP_CONSTANT: {
@@ -225,26 +237,24 @@ LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk) {
     }
     case OP_SET_LOCAL: {
       uint8_t slot = READ_BYTE(&vm);
-      vm.stack.data[slot] = LoxStack_peek(stack, 0);
+      frame->slots[slot] = LoxStack_peek(stack, 0);
       break;
     }
     case OP_JUMP_IF_FALSE: {
       uint16_t offset = READ_SHORT(&vm);
 
       // branchless :))
-      vm.instruction += offset * LoxValue_isFalse(LoxStack_peek(stack, 0));
+      frame->instruction += offset * LoxValue_isFalse(LoxStack_peek(stack, 0));
       break;
     }
     case OP_JUMP: {
       uint16_t offset = READ_SHORT(&vm);
-      // branchless :))
-      vm.instruction += offset;
+      frame->instruction += offset;
       break;
     }
     case OP_LOOP: {
       uint16_t offset = READ_SHORT(&vm);
-      // branchless :))
-      vm.instruction -= offset;
+      frame->instruction -= offset;
       break;
     }
     case OP_RETURN:
@@ -266,19 +276,25 @@ LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
   LoxCompiler compiler;
   LoxCompiler_init(&compiler, LOX_TYPE_TOP_LEVEL);
 
-  LoxFunction *compiled = LoxCompiler_compile(&compiler, source);
+  LoxFunction *function = LoxCompiler_compile(&compiler, source);
 
-  if (!compiled) {
+  if (!function) {
     LoxCompiler_free(&compiler);
     return LOX_INTERPRET_COMPILE_ERROR;
   }
 
-  Chunk *chunk = &compiled->chunk;
+  Chunk *chunk = &function->chunk;
 
-  self->chunk = chunk;
-  self->instruction = &chunk->code[0];
+  LoxStack_push(&self->stack, LOX_OBJECT_VAL(function));
+  LoxCallFrame *frame = &self->frames[self->frameCount++];
 
-  LoxResult result = _LoxVM_run(self, chunk);
+  // self->chunk = chunk;
+  // self->instruction = &chunk->code[0];
+  frame->function = function;
+  frame->instruction = frame->function->chunk.code;
+  frame->slots = vm.stack.data;
+
+  LoxResult result = _LoxVM_run(self);
 
   LoxCompiler_free(&compiler);
   return result;

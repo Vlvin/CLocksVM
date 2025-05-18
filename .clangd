@@ -1,2 +1,4 @@
 CompileFlags:
-  Add: -I/home/vlvin/Code/C/CLocksCompiler/src/
+  Add: 
+    - "-I/home/vlvin/Code/C/CLocksCompiler/src/"
+    - "-DDEBUG_TRACE"

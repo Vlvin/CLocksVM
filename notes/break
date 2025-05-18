@@ -1,0 +1,7 @@
+```lox
+for ;; {
+		break;
+}
+```
+here break does not know where to jump out of loop but you can patch this location to vm or in compiler
+also you can patch loop starting to effectively use continue

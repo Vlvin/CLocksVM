@@ -1,10 +1,19 @@
+#include "loxObject.h"
 #include <loxValueArray.h>
 #include <oneFileSTD.h>
 
-#define STACK_MAX 256
+#define FRAMES_COUNT 64
+
+#define STACK_MAX (FRAMES_COUNT * 256)
 #define STACK_FAILURE 754361029
 #define STACK_SUCCESS 0
 #define STACK_FAILURE_VAL LOX_NUMBER_VAL(754361029)
+
+typedef struct LoxCallFrame {
+  LoxFunction *function;
+  uint8_t *instruction;
+  LoxValue *slots;
+} LoxCallFrame;
 
 typedef struct LoxStack {
   LoxValue data[STACK_MAX];

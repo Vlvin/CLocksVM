@@ -4,10 +4,11 @@
 #include <loxChunk.h>
 #include <loxHashMap.h>
 #include <loxStack.h>
+#include <oneFileSTD.h>
 
 typedef struct LoxVM {
-  Chunk *chunk;
-  uint8_t *instruction;
+  LoxCallFrame frames[FRAMES_COUNT];
+  size_t frameCount;
   LoxStack stack;
   LoxHashMap strings;
   LoxObject *objects;
@@ -29,6 +30,6 @@ void LoxVM_free(LoxVM *self);
 void LoxVM_freeObjects(LoxVM *self);
 
 LoxResult LoxVM_interpret(LoxVM *self, const char *source);
-LoxResult _LoxVM_run(LoxVM *self, Chunk *chunk);
+LoxResult _LoxVM_run(LoxVM *self);
 
 #endif
