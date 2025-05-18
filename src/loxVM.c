@@ -274,7 +274,7 @@ LoxResult _LoxVM_run(LoxVM *self) {
 LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
 
   LoxCompiler compiler;
-  LoxCompiler_init(&compiler, LOX_TYPE_TOP_LEVEL);
+  LoxCompiler_init(&compiler, NULL, LOX_TYPE_TOP_LEVEL);
 
   LoxFunction *function = LoxCompiler_compile(&compiler, source);
 
@@ -282,8 +282,6 @@ LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
     LoxCompiler_free(&compiler);
     return LOX_INTERPRET_COMPILE_ERROR;
   }
-
-  Chunk *chunk = &function->chunk;
 
   LoxStack_push(&self->stack, LOX_OBJECT_VAL(function));
   LoxCallFrame *frame = &self->frames[self->frameCount++];

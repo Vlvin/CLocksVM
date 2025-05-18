@@ -2,3 +2,5 @@ CompileFlags:
   Add: 
     - "-I/home/vlvin/Code/C/CLocksCompiler/src/"
     - "-DDEBUG_TRACE"
+    - "-DDEBUG_PRINT_CODE"
+

@@ -11,11 +11,17 @@
 #include <debug.h>
 #endif
 
-void LoxCompiler_init(LoxCompiler *self, LoxScopeType scope) {
-  LoxParser_init(&self->parser, self);
+void LoxCompiler_init(LoxCompiler *self, LoxCompiler *parent,
+                      LoxScopeType scope) {
+  if (parent != NULL) {
+    self->parser = parent->parser;
+    self->scanner = parent->scanner;
+  }
   self->localCount = 0;
   self->scopeDepth = 0;
   self->function = NULL;
+
+  self->parent = parent;
   self->scopeType = scope;
   self->function = LoxFunction_new();
 
@@ -26,17 +32,23 @@ void LoxCompiler_init(LoxCompiler *self, LoxScopeType scope) {
 }
 
 LoxFunction *LoxCompiler_compile(LoxCompiler *self, const char *source) {
-  LoxScanner_init(&self->scanner, source);
+  LoxScanner scanner;
+  LoxParser parser;
+  self->scanner = &scanner;
+  self->parser = &parser;
 
-  LoxParser_advance(&self->parser, &self->scanner);
-  while (!LoxParser_match(&self->parser, &self->scanner, TOKEN_EOF))
-    LoxParser_declaration(&self->parser, &self->scanner);
-  /*LoxParser_expression(&self->parser);*/
-  /*LoxParser_consume(&self->parser, &self->scanner, TOKEN_SEMICOLON, "Expect
+  LoxScanner_init(self->scanner, source);
+  LoxParser_init(self->parser, self);
+
+  LoxParser_advance(self->parser, self->scanner);
+  while (!LoxParser_match(self->parser, self->scanner, TOKEN_EOF))
+    LoxParser_declaration(self->parser, self->scanner, self);
+  /*LoxParser_expression(self->parser);*/
+  /*LoxParser_consume(self->parser, self->scanner, TOKEN_SEMICOLON, "Expect
    * end of expression");*/
   LoxFunction *function = LoxCompiler_end(self);
-  LoxScanner_free(&self->scanner);
-  return self->parser.hadError ? NULL : function;
+  LoxScanner_free(self->scanner);
+  return self->parser->hadError ? NULL : function;
 }
 
 Chunk *LoxCompiler_currentChunk(LoxCompiler *self) {
@@ -48,7 +60,7 @@ LoxFunction *LoxCompiler_end(LoxCompiler *self) {
   LoxFunction *function = self->function;
 
 #ifdef DEBUG_PRINT_CODE
-  if (!self->parser.hadError)
+  if (!self->parser->hadError)
     disassembleChunk(&self->function->chunk, function->name != NULL
                                                  ? function->name->bytes
                                                  : "<script>");
@@ -57,14 +69,14 @@ LoxFunction *LoxCompiler_end(LoxCompiler *self) {
 }
 
 void LoxCompiler_free(LoxCompiler *self) {
-  LoxParser_free(&self->parser);
+  LoxParser_free(self->parser);
   // LoxObject_free((LoxObject *)self->function);
   (*self) = (LoxCompiler){0};
 }
 
 void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name) {
   if (self->localCount == UINT8_COUNT) {
-    errorAt(&self->parser, &self->parser.previous,
+    errorAt(self->parser, &self->parser->previous,
             "Too many locals in function");
     return;
   }
@@ -73,7 +85,30 @@ void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name) {
   local->depth = -1;
 }
 
+void LoxCompiler_function(LoxCompiler *self, LoxScopeType scope_type) {
+  LoxCompiler compiler;
+  LoxCompiler_init(&compiler, self, scope_type);
+  LoxCompiler_beginScope(&compiler);
+  {
+    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_PAREN,
+                      "Expected '(' before function name");
+    if (!LoxParser_check(compiler.parser, TOKEN_RIGHT_PAREN)) {
+    }
+    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_RIGHT_PAREN,
+                      "Expected ')' after function params");
+    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_BRACE,
+                      "Expected '{' before function name");
+    LoxParser_blockStatement(compiler.parser, compiler.scanner,
+                             &compiler); // already comsumes '}'
+    LoxFunction *function = LoxCompiler_end(&compiler);
+    _LoxCompiler_emitBytes(&compiler, 2, OP_CONSTANT, LOX_OBJECT_VAL(function));
+  }
+  LoxCompiler_endScope(&compiler);
+}
+
 void LoxCompiler_markInitialized(LoxCompiler *self) {
+  if (self->scopeDepth == 0)
+    return;
   self->locals[self->localCount - 1].depth = self->scopeDepth;
 }
 
@@ -90,7 +125,7 @@ int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name) {
     }
   }
   if (met_uninitialized_self)
-    errorAt(&self->parser, &self->parser.previous,
+    errorAt(self->parser, &self->parser->previous,
             "Can't read variable in it's own initializer");
   return -1;
 }
@@ -112,7 +147,7 @@ uint16_t LoxCompiler_makeConstant(LoxCompiler *self, LoxValue value) {
 void LoxCompiler_patchJump(LoxCompiler *self, int offset) {
   int jump = LoxCompiler_currentChunk(self)->size - offset - 2;
   if (jump > UINT16_MAX) {
-    errorAt(&self->parser, &self->parser.previous, "Too much to jump");
+    errorAt(self->parser, &self->parser->previous, "Too much to jump");
   }
   uint8_Pair jumpPair = split_uint16(jump);
   *(&LoxCompiler_currentChunk(self)->code[offset]) = jumpPair.first;
@@ -120,7 +155,7 @@ void LoxCompiler_patchJump(LoxCompiler *self, int offset) {
 }
 
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t byte) {
-  Chunk_add(LoxCompiler_currentChunk(self), byte, self->parser.previous.line);
+  Chunk_add(LoxCompiler_currentChunk(self), byte, self->parser->previous.line);
 }
 
 void LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
@@ -128,7 +163,7 @@ void LoxCompiler_emitLoop(LoxCompiler *self, int loopStart) {
   _LoxCompiler_emitByte(self, OP_LOOP);
   int offset = LoxCompiler_currentChunk(self)->size - loopStart + 2;
   if (offset > UINT16_MAX) {
-    errorAt(&self->parser, &self->parser.previous, "Too big loop size");
+    errorAt(self->parser, &self->parser->previous, "Too big loop size");
   }
   uint8_Pair index = split_uint16(offset);
   _LoxCompiler_emitBytes(self, 2, index.first, index.second);

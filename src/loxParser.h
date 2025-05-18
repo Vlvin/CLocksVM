@@ -6,7 +6,6 @@
 
 typedef struct LoxCompiler LoxCompiler;
 typedef struct LoxParser {
-  LoxCompiler *masterCompiler;
   LoxToken previous;
   LoxToken current;
   bool hadError;
@@ -26,7 +25,7 @@ typedef enum {
   PREC_PRIMARY
 } LoxPrecedence;
 
-typedef void (*ParseFn)(LoxParser *self, bool canAssign);
+typedef void (*ParseFn)(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 
 typedef struct LoxParseRule {
   ParseFn prefix;
@@ -46,28 +45,34 @@ bool LoxParser_check(LoxParser *self, TokenType type);
 bool LoxParser_match(LoxParser *self, LoxScanner *scanner, TokenType type);
 LoxParseRule *LoxParser_getRule(TokenType type);
 
-uint16_t LoxParser_parseVariable(LoxParser *self, LoxCompiler *compiler,
-                                 LoxScanner *scanner, const char *errorMessage);
+uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
+                                 LoxCompiler *compiler,
+                                 const char *errorMessage);
 void LoxParser_defineVariable(LoxParser *self, LoxCompiler *compiler,
                               uint16_t name);
-void LoxParser_declareVariable(LoxParser *self, LoxCompiler *compiler,
-                               LoxScanner *scanner);
-void LoxParser_namedVariable(LoxParser *self, LoxToken name, bool canAssign);
+void LoxParser_declareVariable(LoxParser *self, LoxScanner *scanner,
+                               LoxCompiler *compiler);
+
+void LoxParser_namedVariable(LoxParser *self, LoxCompiler *compiler,
+                             LoxToken name, bool canAssign);
 void LoxParser_syncronize(LoxParser *self, LoxScanner *scanner);
-void LoxParser_declaration(LoxParser *self, LoxScanner *scanner);
-void LoxParser_statement(LoxParser *self, LoxScanner *scanner);
+void LoxParser_declaration(LoxParser *self, LoxScanner *scanner,
+                           LoxCompiler *compiler);
+void LoxParser_statement(LoxParser *self, LoxScanner *scanner,
+                         LoxCompiler *compiler);
 // expressions
-void LoxParser_expression(LoxParser *self);
-void LoxParser_string(LoxParser *self, bool canAssign);
-void LoxParser_number(LoxParser *self, bool canAssign);
-void LoxParser_grouping(LoxParser *self, bool canAssign);
-void LoxParser_unary(LoxParser *self, bool canAssign);
-void LoxParser_binary(LoxParser *self, bool canAssign);
-void LoxParser_literal(LoxParser *self, bool canAssign);
-void LoxParser_variable(LoxParser *self, bool canAssign);
-void LoxParser_and(LoxParser *self, bool canAssign);
-void LoxParser_or(LoxParser *self, bool canAssign);
-void LoxParser_parsePrecedence(LoxParser *self, LoxPrecedence precedance);
+void LoxParser_expression(LoxParser *self, LoxCompiler *compiler);
+void LoxParser_string(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_number(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_grouping(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_unary(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_binary(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_literal(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_variable(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_and(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_or(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_parsePrecedence(LoxParser *self, LoxCompiler *compiler,
+                               LoxPrecedence precedance);
 // statements
 void LoxParser_ifStatement(LoxParser *self, LoxScanner *scanner,
                            LoxCompiler *compiler);
@@ -75,8 +80,14 @@ void LoxParser_whileStatement(LoxParser *self, LoxScanner *scanner,
                               LoxCompiler *compiler);
 void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
                             LoxCompiler *compiler);
-void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner);
-void LoxParser_blockStatement(LoxParser *self, LoxScanner *scanner);
-void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner);
-void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner);
+void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler);
+void LoxParser_blockStatement(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler);
+void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner,
+                                   LoxCompiler *compiler);
+void LoxParser_varDeclaration(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler);
+void LoxParser_funDeclaration(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler);
 #endif

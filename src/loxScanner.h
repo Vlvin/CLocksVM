@@ -1,9 +1,9 @@
 #ifndef LOX_SCANNER_H
 #define LOX_SCANNER_H
 
+#include "loxToken.h"
 #include <oneFileSTD.h>
 
-typedef enum TokenType TokenType;
 typedef struct LoxToken LoxToken;
 
 typedef struct LoxScanner {

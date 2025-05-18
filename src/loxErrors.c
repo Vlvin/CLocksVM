@@ -11,10 +11,10 @@ void runtimeError(LoxVM *vm, const char *format, ...) {
   va_end(args);
   fputc('\n', stderr);
 
-  LoxCallFrame frame = vm->frames[vm->frameCount - 1];
+  LoxCallFrame *frame = &vm->frames[vm->frameCount - 1];
 
-  size_t instruction = frame.instruction - frame.function->chunk.code - 1;
-  int line = LineTracker_getLine(&frame.function->chunk, instruction);
+  size_t instruction = frame->instruction - frame->function->chunk.code - 1;
+  int line = LineTracker_getLine(&frame->function->chunk, instruction);
   fprintf(stderr, "in %s at line %d\n", "module", line);
   LoxStack_reset(&vm->stack);
 }

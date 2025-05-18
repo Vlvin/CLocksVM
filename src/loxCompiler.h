@@ -22,10 +22,12 @@ typedef struct LoxLocal {
   int depth;
 } LoxLocal;
 
+typedef struct LoxCompiler LoxCompiler;
+
 typedef struct LoxCompiler {
-  LoxScanner scanner;
-  LoxParser parser;
-  // Chunk *compilingChunk;
+  LoxCompiler *parent;
+  LoxScanner *scanner;
+  LoxParser *parser;
   LoxFunction *function;
   LoxScopeType scopeType;
   LoxLocal locals[UINT8_COUNT];
@@ -33,7 +35,8 @@ typedef struct LoxCompiler {
   int scopeDepth;
 } LoxCompiler;
 
-void LoxCompiler_init(LoxCompiler *self, LoxScopeType scope);
+void LoxCompiler_init(LoxCompiler *self, LoxCompiler *parent,
+                      LoxScopeType scope);
 LoxFunction *LoxCompiler_compile(LoxCompiler *self, const char *source);
 Chunk *LoxCompiler_currentChunk(LoxCompiler *self);
 LoxFunction *LoxCompiler_end(LoxCompiler *self);
@@ -43,6 +46,7 @@ void LoxCompiler_beginScope(LoxCompiler *self);
 void LoxCompiler_endScope(LoxCompiler *self);
 void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name);
 void LoxCompiler_markInitialized(LoxCompiler *self);
+void LoxCompiler_function(LoxCompiler *self, LoxScopeType scope_type);
 int LoxCompiler_resolveLocal(LoxCompiler *self, LoxToken *name);
 // private:
 void _LoxCompiler_emitByte(LoxCompiler *self, uint8_t instruction);
