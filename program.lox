@@ -2,4 +2,5 @@ fun subroutine() {
 	print("Helllo");
 }
 
-print (subroutine);
+//var subroutine = 1;
+print subroutine;

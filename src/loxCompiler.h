@@ -29,7 +29,6 @@ typedef struct LoxCompiler {
   LoxScanner *scanner;
   LoxParser *parser;
   LoxFunction *function;
-  LoxScopeType scopeType;
   LoxLocal locals[UINT8_COUNT];
   int localCount;
   int scopeDepth;

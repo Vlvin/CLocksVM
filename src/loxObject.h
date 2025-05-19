@@ -2,6 +2,7 @@
 #define LOX_OBJECT_H
 
 #include "loxChunk.h"
+#include "loxCompiler.h"
 #include <loxValue.h>
 #include <oneFileSTD.h>
 #include <stdint.h>
@@ -55,10 +56,11 @@ typedef struct LoxFunction {
   uint arity;
   Chunk chunk;
   LoxString *name;
+  LoxScopeType type;
 } LoxFunction;
 #define AS_LOX_FUNCTION(value) ((LoxFunction *)AS_LOX_OBJECT(value))
 
-LoxFunction *LoxFunction_new();
+LoxFunction *LoxFunction_new(LoxScopeType scope_type);
 
 void LoxFunction_print(LoxFunction *self);
 

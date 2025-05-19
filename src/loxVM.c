@@ -49,7 +49,7 @@ LoxResult _LoxVM_run(LoxVM *self) {
 
   Chunk *chunk = &frame->function->chunk;
 
-#define GET_FRAME(vm) (&self->frames[self->frameCount - 1])
+#define GET_FRAME(vm) (frame)
 
 #define READ_BYTE(vm) (*(GET_FRAME(vm))->instruction++)
 #define READ_SHORT(vm)                                                         \
@@ -180,20 +180,20 @@ LoxResult _LoxVM_run(LoxVM *self) {
       break;
     case OP_DEFINE_GLOBAL: {
       LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
-      LoxHashMap_set(&vm.globals, name, LoxStack_peek(&vm.stack, 0));
-      LoxStack_pop(&vm.stack);
+      LoxHashMap_set(&self->globals, name, LoxStack_peek(stack, 0));
+      LoxStack_pop(stack);
       break;
     }
     case OP_DEFINE_GLOBAL_LONG: {
       LoxString *name = AS_LOX_STRING(READ_CONST_LONG(&vm));
-      LoxHashMap_set(&vm.globals, name, LoxStack_peek(&vm.stack, 0));
-      LoxStack_pop(&vm.stack);
+      LoxHashMap_set(&self->globals, name, LoxStack_peek(stack, 0));
+      LoxStack_pop(stack);
       break;
     }
     case OP_GET_GLOBAL: {
       LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
       LoxValue value;
-      if (!LoxHashMap_get(&vm.globals, name, &value)) { // does not exist
+      if (!LoxHashMap_get(&self->globals, name, &value)) { // does not exist
         runtimeError(&vm, "Undefined variable %s\n", AS_LOX_CSTRING(value));
         return LOX_INTERPRET_RUNTIME_ERROR;
       }
@@ -203,7 +203,7 @@ LoxResult _LoxVM_run(LoxVM *self) {
     case OP_GET_GLOBAL_LONG: {
       LoxString *name = AS_LOX_STRING(READ_CONST_LONG(&vm));
       LoxValue value;
-      if (!LoxHashMap_get(&vm.globals, name, &value)) { // does not exist
+      if (!LoxHashMap_get(&self->globals, name, &value)) { // does not exist
         runtimeError(&vm, "Undefined variable %s\n", AS_LOX_CSTRING(value));
         return LOX_INTERPRET_RUNTIME_ERROR;
       }
@@ -212,25 +212,25 @@ LoxResult _LoxVM_run(LoxVM *self) {
     }
     case OP_GET_LOCAL: {
       uint8_t slot = READ_BYTE(&vm);
-      LoxStack_push(stack, vm.stack.data[slot]);
+      LoxStack_push(stack, frame->slots[slot]);
       break;
     }
     case OP_SET_GLOBAL: {
       LoxString *name = AS_LOX_STRING(READ_CONST(&vm));
-      if (!LoxHashMap_set(&vm.globals, name,
+      if (!LoxHashMap_set(&self->globals, name,
                           LoxStack_peek(stack, 0))) { // does not exist
-        LoxHashMap_delete(&vm.globals, name);
-        runtimeError(&vm, "Undefined variable %s\n", name->bytes);
+        LoxHashMap_delete(&self->globals, name);
+        runtimeError(self, "Undefined variable %s\n", name->bytes);
         return LOX_INTERPRET_RUNTIME_ERROR;
       }
       break;
     }
     case OP_SET_GLOBAL_LONG: {
       LoxString *name = AS_LOX_STRING(READ_CONST_LONG(&vm));
-      if (!LoxHashMap_set(&vm.globals, name,
+      if (!LoxHashMap_set(&self->globals, name,
                           LoxStack_peek(stack, 0))) { // does not exist
-        LoxHashMap_delete(&vm.globals, name);
-        runtimeError(&vm, "Undefined variable %s\n", name->bytes);
+        LoxHashMap_delete(&self->globals, name);
+        runtimeError(self, "Undefined variable %s\n", name->bytes);
         return LOX_INTERPRET_RUNTIME_ERROR;
       }
       break;
@@ -290,7 +290,7 @@ LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
   // self->instruction = &chunk->code[0];
   frame->function = function;
   frame->instruction = frame->function->chunk.code;
-  frame->slots = vm.stack.data;
+  frame->slots = self->stack.data;
 
   LoxResult result = _LoxVM_run(self);
 

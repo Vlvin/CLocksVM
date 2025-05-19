@@ -12,7 +12,7 @@
 #endif
 
 void LoxCompiler_init(LoxCompiler *self, LoxCompiler *parent,
-                      LoxScopeType scope) {
+                      LoxScopeType scope_type) {
   if (parent != NULL) {
     self->parser = parent->parser;
     self->scanner = parent->scanner;
@@ -22,8 +22,23 @@ void LoxCompiler_init(LoxCompiler *self, LoxCompiler *parent,
   self->function = NULL;
 
   self->parent = parent;
-  self->scopeType = scope;
-  self->function = LoxFunction_new();
+  self->function = LoxFunction_new(scope_type);
+
+  if (scope_type == LOX_TYPE_TOP_LEVEL) {
+    // pass script file name
+    // assign it to function name
+    // or else
+    if (parent != NULL) { // import script; -> function->name == "script";
+      self->function->name = copyString(&vm, parent->parser->previous.start,
+                                        parent->parser->previous.size);
+    } else { // main script
+      self->function->name = copyString(&vm, "__main__", 8);
+    }
+  } else {
+    assert(parent != NULL);
+    self->function->name = copyString(&vm, parent->parser->previous.start,
+                                      parent->parser->previous.size);
+  }
 
   LoxLocal *local = &self->locals[self->localCount++];
   local->depth = 0;
@@ -88,22 +103,51 @@ void LoxCompiler_addLocal(LoxCompiler *self, LoxToken name) {
 void LoxCompiler_function(LoxCompiler *self, LoxScopeType scope_type) {
   LoxCompiler compiler;
   LoxCompiler_init(&compiler, self, scope_type);
-  LoxCompiler_beginScope(&compiler);
-  {
-    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_PAREN,
-                      "Expected '(' before function name");
-    if (!LoxParser_check(compiler.parser, TOKEN_RIGHT_PAREN)) {
-    }
-    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_RIGHT_PAREN,
-                      "Expected ')' after function params");
-    LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_BRACE,
-                      "Expected '{' before function name");
-    LoxParser_blockStatement(compiler.parser, compiler.scanner,
-                             &compiler); // already comsumes '}'
-    LoxFunction *function = LoxCompiler_end(&compiler);
-    _LoxCompiler_emitBytes(&compiler, 2, OP_CONSTANT, LOX_OBJECT_VAL(function));
+  LoxCompiler_beginScope(self);
+  // name(arg1, arg2) { body }
+  //     ^
+  LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_PAREN,
+                    "Expected '(' after function name");
+  if (!LoxParser_check(compiler.parser, TOKEN_RIGHT_PAREN)) {
+
+    // name(arg1, arg2) { body }
+    //      ^^^
+    do {
+      compiler.function->arity++;
+      if (compiler.function->arity > 255) {
+        errorAtCurrent(
+            compiler.parser,
+            "Too many arguments in function declaration. 255 is top limit");
+      }
+      uint16_t argument =
+          LoxParser_parseVariable(compiler.parser, compiler.scanner, &compiler,
+                                  "Expected parameter name");
+      LoxParser_defineVariable(compiler.parser, &compiler, argument);
+
+      // name(arg1, arg2) { body }
+      //          ^
+    } while (LoxParser_match(compiler.parser, compiler.scanner, TOKEN_COMMA));
   }
-  LoxCompiler_endScope(&compiler);
+
+  // name(arg1, arg2) { body }
+  //                ^
+  LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_RIGHT_PAREN,
+                    "Expected ')' after function params");
+  // name(arg1, arg2) { body }
+  //                  ^
+  LoxParser_consume(compiler.parser, compiler.scanner, TOKEN_LEFT_BRACE,
+                    "Expected '{' before function name");
+  // name(arg1, arg2) { body }
+  //                    ^^^^
+  LoxParser_blockStatement(compiler.parser, compiler.scanner,
+                           &compiler); // already comsumes '}'
+  // name(arg1, arg2) { body } EOL
+  //                           ^^^
+  LoxFunction *function = LoxCompiler_end(&compiler);
+  _LoxCompiler_emitBytes(
+      self, 2, OP_CONSTANT,
+      LoxCompiler_makeConstant(self, LOX_OBJECT_VAL(function)));
+  LoxCompiler_endScope(self);
 }
 
 void LoxCompiler_markInitialized(LoxCompiler *self) {

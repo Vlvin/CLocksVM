@@ -3,4 +3,6 @@ CompileFlags:
     - "-I/home/vlvin/Code/C/CLocksCompiler/src/"
     - "-DDEBUG_TRACE"
     - "-DDEBUG_PRINT_CODE"
+  CompileFlags:
+    CompilationDatabase: "cmake"
 

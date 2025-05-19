@@ -1,3 +1,4 @@
+#include "loxCompiler.h"
 #include <loxMemory.h>
 #include <loxObject.h>
 #include <loxVM.h>
@@ -114,20 +115,21 @@ void printObject(LoxValue value) {
   }
 }
 
-LoxFunction *LoxFunction_new() {
+LoxFunction *LoxFunction_new(LoxScopeType scope_type) {
   LoxFunction *self = ALLOCATE_OBJECT(&vm, LoxFunction, LOX_OBJECT_FUNCTION);
   self->arity = 0;
   self->name = NULL;
+  self->type = scope_type;
   Chunk_init(&self->chunk);
   return self;
 }
 
 void LoxFunction_print(LoxFunction *self) {
-  if (self->name == NULL) {
-    printf("<script>");
+  if (self->type == LOX_TYPE_TOP_LEVEL) {
+    printf("<script %*s>", self->name->size, self->name->bytes);
     return;
   }
-  printf("<fn %*.s>", self->name->size, self->name->bytes);
+  printf("<fn %*s>", self->name->size, self->name->bytes);
 }
 
 LoxString *LoxFunction_toString(LoxVM *vm, LoxFunction *self) {
