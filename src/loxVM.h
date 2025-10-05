@@ -1,6 +1,7 @@
 #ifndef LOX_VIRTUAL_MACHINE_H
 #define LOX_VIRTUAL_MACHINE_H
 
+#include "loxValue.h"
 #include <loxChunk.h>
 #include <loxHashMap.h>
 #include <loxStack.h>
@@ -29,6 +30,7 @@ void LoxVM_init(LoxVM *self);
 void LoxVM_free(LoxVM *self);
 void LoxVM_freeObjects(LoxVM *self);
 
+bool LoxVM_callValue(LoxVM *vm, LoxValue function, int argCount);
 LoxResult LoxVM_interpret(LoxVM *self, const char *source);
 LoxResult _LoxVM_run(LoxVM *self);
 

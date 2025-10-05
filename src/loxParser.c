@@ -17,7 +17,7 @@
   }
 
 static LoxParseRule rules[] = {
-    [TOKEN_LEFT_PAREN] = {LoxParser_grouping, NULL, PREC_NONE},
+    [TOKEN_LEFT_PAREN] = {LoxParser_grouping, LoxParser_call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
@@ -116,6 +116,7 @@ void LoxParser_statement(LoxParser *self, LoxScanner *scanner,
 void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner,
                                    LoxCompiler *compiler) {
   LoxParser_expression(self, compiler);
+  // TODO: make this work for function arguements in a function call
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of the expression");
   _LoxCompiler_emitByte(compiler, OP_POP);
@@ -327,6 +328,23 @@ void LoxParser_namedVariable(LoxParser *self, LoxCompiler *compiler,
   }
 }
 
+uint8_t LoxParser_argumentList(LoxParser *self, LoxCompiler *compiler,
+                               LoxScanner *scanner) {
+  uint8_t argCount = 0;
+  if (!LoxParser_check(self, TOKEN_RIGHT_PAREN)) {
+    do {
+      LoxParser_expression(self, compiler);
+      if (argCount == 255) {
+        errorAt(self, &self->previous, "Can't have more than 255 arguments");
+      }
+      argCount++;
+    } while (LoxParser_match(self, scanner, TOKEN_COMMA));
+  }
+  LoxParser_consume(self, scanner, TOKEN_RIGHT_PAREN,
+                    "Expected ')' after argument list");
+  return argCount;
+}
+
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
                                  LoxCompiler *compiler,
                                  const char *errorMessage) {
@@ -395,8 +413,15 @@ void LoxParser_grouping(LoxParser *self, LoxCompiler *compiler,
   LoxParser_consume(self, compiler->scanner, TOKEN_RIGHT_PAREN,
                     "Expect ')' after expression");
 }
+
+void LoxParser_call(LoxParser *self, LoxCompiler *compiler, bool canAssign) {
+  uint8_t argCount = LoxParser_argumentList(self, compiler, compiler->scanner);
+  _LoxCompiler_emitBytes(compiler, 2, OP_CALL, argCount);
+  // LoxParser_consume(self, compiler->scanner, TOKEN_RIGHT_PAREN,
+  //                   "Expect ')' after function args");
+}
 void LoxParser_unary(LoxParser *self, LoxCompiler *compiler, bool canAssign) {
-  TokenType operator= self->previous.type;
+  TokenType operator = self->previous.type;
 
   LoxParseRule *rule = LoxParser_getRule(operator);
   LoxParser_parsePrecedence(self, compiler,
@@ -442,7 +467,7 @@ void LoxParser_variable(LoxParser *self, LoxCompiler *compiler,
 }
 
 void LoxParser_binary(LoxParser *self, LoxCompiler *compiler, bool canAssign) {
-  TokenType operator= self->previous.type;
+  TokenType operator = self->previous.type;
   LoxParseRule *rule = LoxParser_getRule(operator);
   LoxParser_parsePrecedence(self, compiler,
                             (LoxPrecedence)(rule->precedence + 1));

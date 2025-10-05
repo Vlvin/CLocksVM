@@ -61,6 +61,7 @@ typedef struct LoxFunction {
 #define AS_LOX_FUNCTION(value) ((LoxFunction *)AS_LOX_OBJECT(value))
 
 LoxFunction *LoxFunction_new(LoxScopeType scope_type);
+bool LoxFunction_call(LoxFunction *self, LoxVM *vm, int argCount);
 
 void LoxFunction_print(LoxFunction *self);
 

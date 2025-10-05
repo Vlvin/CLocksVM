@@ -1,6 +1,6 @@
 CompileFlags:
   Add: 
-    - "-I/home/vlvin/Code/C/CLocksCompiler/src/"
+    - "-I/home/vlvin/Code/CLocksVM/src/"
     - "-DDEBUG_TRACE"
     - "-DDEBUG_PRINT_CODE"
   CompileFlags:

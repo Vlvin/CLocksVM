@@ -1,4 +1,5 @@
 #include "loxCompiler.h"
+#include "loxErrors.h"
 #include <loxMemory.h>
 #include <loxObject.h>
 #include <loxVM.h>
@@ -122,6 +123,18 @@ LoxFunction *LoxFunction_new(LoxScopeType scope_type) {
   self->type = scope_type;
   Chunk_init(&self->chunk);
   return self;
+}
+bool LoxFunction_call(LoxFunction *self, LoxVM *vm, int argCount) {
+  if (self->arity != argCount) {
+    runtimeError(vm, "Expected %ud arguments, but got %d", self->arity,
+                 argCount);
+    return false;
+  }
+  LoxCallFrame *frame = &vm->frames[vm->frameCount++];
+  frame->function = self;
+  frame->instruction = self->chunk.code;
+  frame->slots = vm->stack.topElement - argCount - 1;
+  return true;
 }
 
 void LoxFunction_print(LoxFunction *self) {

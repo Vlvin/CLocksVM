@@ -48,6 +48,9 @@ LoxParseRule *LoxParser_getRule(TokenType type);
 uint16_t LoxParser_parseVariable(LoxParser *self, LoxScanner *scanner,
                                  LoxCompiler *compiler,
                                  const char *errorMessage);
+
+uint8_t LoxParser_argumentList(LoxParser *self, LoxCompiler *compiler,
+                               LoxScanner *scanner);
 void LoxParser_defineVariable(LoxParser *self, LoxCompiler *compiler,
                               uint16_t name);
 void LoxParser_declareVariable(LoxParser *self, LoxScanner *scanner,
@@ -60,11 +63,13 @@ void LoxParser_declaration(LoxParser *self, LoxScanner *scanner,
                            LoxCompiler *compiler);
 void LoxParser_statement(LoxParser *self, LoxScanner *scanner,
                          LoxCompiler *compiler);
+
 // expressions
 void LoxParser_expression(LoxParser *self, LoxCompiler *compiler);
 void LoxParser_string(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 void LoxParser_number(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 void LoxParser_grouping(LoxParser *self, LoxCompiler *compiler, bool canAssign);
+void LoxParser_call(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 void LoxParser_unary(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 void LoxParser_binary(LoxParser *self, LoxCompiler *compiler, bool canAssign);
 void LoxParser_literal(LoxParser *self, LoxCompiler *compiler, bool canAssign);

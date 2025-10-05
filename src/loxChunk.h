@@ -44,6 +44,7 @@ typedef enum {
   OP_TRUE,
   OP_FALSE,
   OP_NIL,
+  OP_CALL,
   OP_RETURN,
   OP_POP,
   // STATEMENTS

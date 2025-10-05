@@ -257,6 +257,14 @@ LoxResult _LoxVM_run(LoxVM *self) {
       frame->instruction -= offset;
       break;
     }
+    case OP_CALL: {
+      int argCount = READ_BYTE(vm);
+      if (!LoxVM_callValue(&vm, LoxStack_peek(stack, argCount), argCount)) {
+        return LOX_INTERPRET_RUNTIME_ERROR;
+      }
+      frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
     case OP_RETURN:
       return LOX_INTERPRET_OK;
     }
@@ -269,6 +277,23 @@ LoxResult _LoxVM_run(LoxVM *self) {
 #undef READ_CONST_LONG
 #undef UNARY_OP
 #undef BINARY_OP
+}
+
+bool LoxVM_callValue(LoxVM *vm, LoxValue callee, int argCount) {
+  if (IS_LOX_OBJECT(callee)) {
+    switch (LOX_OBJECT_TYPE(callee)) {
+    case LOX_OBJECT_FUNCTION: {
+      return LoxFunction_call(AS_LOX_FUNCTION(callee), vm, argCount);
+      break;
+    }
+    default: {
+      // non callable
+      break;
+    }
+    }
+  }
+  runtimeError(vm, "Can only call functions and classes");
+  return false;
 }
 
 LoxResult LoxVM_interpret(LoxVM *self, const char *source) {
