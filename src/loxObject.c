@@ -126,7 +126,7 @@ LoxFunction *LoxFunction_new(LoxScopeType scope_type) {
 }
 bool LoxFunction_call(LoxFunction *self, LoxVM *vm, int argCount) {
   if (self->arity != argCount) {
-    runtimeError(vm, "Expected %ud arguments, but got %d", self->arity,
+    runtimeError(vm, "Expected %u arguments, but got %d", self->arity,
                  argCount);
     return false;
   }

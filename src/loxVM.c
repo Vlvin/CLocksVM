@@ -265,8 +265,18 @@ LoxResult _LoxVM_run(LoxVM *self) {
       frame = &vm.frames[vm.frameCount - 1];
       break;
     }
-    case OP_RETURN:
-      return LOX_INTERPRET_OK;
+    case OP_RETURN: {
+      LoxValue result = LoxStack_pop(stack);
+      vm.frameCount--;
+      if (vm.frameCount == 0) {
+        LoxStack_pop(stack);
+        return LOX_INTERPRET_OK;
+      }
+      stack->topElement = frame->slots;
+      LoxStack_push(stack, result);
+      frame = &vm.frames[vm.frameCount-1];
+      break;
+    }
     }
   }
   return LOX_INTERPRET_RUNTIME_ERROR;

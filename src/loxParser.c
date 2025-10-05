@@ -108,6 +108,9 @@ void LoxParser_statement(LoxParser *self, LoxScanner *scanner,
     LoxParser_ifStatement(self, scanner, compiler);
   } else if (LoxParser_match(self, scanner, TOKEN_WHILE)) {
     LoxParser_whileStatement(self, scanner, compiler);
+
+  } else if (LoxParser_match(self, scanner, TOKEN_RETURN)) {
+    LoxParser_returnStatement(self, scanner, compiler);
   } else {
     LoxParser_expressionStatement(self, scanner, compiler);
   }
@@ -116,7 +119,6 @@ void LoxParser_statement(LoxParser *self, LoxScanner *scanner,
 void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner,
                                    LoxCompiler *compiler) {
   LoxParser_expression(self, compiler);
-  // TODO: make this work for function arguements in a function call
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of the expression");
   _LoxCompiler_emitByte(compiler, OP_POP);
@@ -138,6 +140,17 @@ void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner,
   LoxParser_consume(self, scanner, TOKEN_SEMICOLON,
                     "Expected ';' at the end of statement");
   _LoxCompiler_emitByte(compiler, OP_PRINT);
+}
+
+void LoxParser_returnStatement(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler) {
+  if (LoxParser_match(self, scanner, TOKEN_SEMICOLON)) {
+    _LoxCompiler_emitReturn(compiler);
+    return;
+  }
+  LoxParser_expression(self,compiler);
+  LoxParser_consume(self,scanner,TOKEN_SEMICOLON,"Expected ';' after expression");
+  _LoxCompiler_emitByte(compiler, OP_RETURN);
 }
 
 void LoxParser_whileStatement(LoxParser *self, LoxScanner *scanner,
@@ -410,6 +423,7 @@ void LoxParser_number(LoxParser *self, LoxCompiler *compiler, bool canAssign) {
 void LoxParser_grouping(LoxParser *self, LoxCompiler *compiler,
                         bool canAssign) {
   LoxParser_expression(self, compiler);
+
   LoxParser_consume(self, compiler->scanner, TOKEN_RIGHT_PAREN,
                     "Expect ')' after expression");
 }

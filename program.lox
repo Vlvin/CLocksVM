@@ -1,8 +1,13 @@
-fun subroutine() {
-	print("Helllo");
+fun sum( b, c) {
+  var d = 0;
+  d = b + c;
+  return d;
 }
 
-subroutine();
+fun mul(a,b) {
+  return a * b;
+}
 
+print(mul(sum(1,2),sum(3,4)));
 
 

@@ -227,6 +227,7 @@ void _LoxCompiler_emitBytes(LoxCompiler *self, int count, ...) {
 }
 
 void _LoxCompiler_emitReturn(LoxCompiler *self) {
+  _LoxCompiler_emitByte(self, OP_NIL);
   _LoxCompiler_emitByte(self, OP_RETURN);
 }
 

@@ -87,6 +87,8 @@ void LoxParser_forStatement(LoxParser *self, LoxScanner *scanner,
                             LoxCompiler *compiler);
 void LoxParser_printStatement(LoxParser *self, LoxScanner *scanner,
                               LoxCompiler *compiler);
+void LoxParser_returnStatement(LoxParser *self, LoxScanner *scanner,
+                              LoxCompiler *compiler);
 void LoxParser_blockStatement(LoxParser *self, LoxScanner *scanner,
                               LoxCompiler *compiler);
 void LoxParser_expressionStatement(LoxParser *self, LoxScanner *scanner,
